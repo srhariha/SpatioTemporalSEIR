@@ -1,0 +1,5 @@
+﻿fromName,toName,distance
+P3,P1,0.03
+P3,P2,0.01
+P1,P3,0.03
+P2,P3,0.01
