@@ -29,7 +29,7 @@ for experts in community health to corroborate their intuition against a mathema
 
 5. 	Spatio-temporal effect of various lockdown strategies can be tried out by
 	the user. Some examples of lockdown strategies include
-	(a) Lockdown a panchayat for $d$ days if there are more than $c$ active cases in that panchayat.
+	(a) Lockdown a panchayat for $`d`$ days if there are more than $c$ active cases in that panchayat.
 	(b) Lockdown a panchayat and its neighbouring panchayats for $d$ days if there are more than $c$ active cases in that panchayat.
 
 6.	A lockdown strategy will be declared as *safe* if the demand for number of
