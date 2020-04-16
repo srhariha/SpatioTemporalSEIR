@@ -79,10 +79,7 @@ $N_i$.
 
 The reason to add a separate category H to the standard SEIR model is to estimate the load on hospital beds. The number of hospital beds will be a function of I + H and not I alone.
 
-### Update equations
-
-If we discretize time $t$ to represent days, then we can write the update
-equations as
+### Temporal evolution
 
 $$
 \begin{aligned}
@@ -114,6 +111,10 @@ Here
 
 -	$t_E$, $t_I$ and $t_R$ are the mean time that a person spends in the 
 	respective compartments, before moving onto the next.
+
+-	The time variable is hidden in the above equations for readability.
+	$S_i$ should be read as $S_i(t)$ and $\dot S$ should be read as
+	$S(t+1) - S(t)$, and so on.
 
 ### Current parameter choices
 
@@ -171,7 +172,7 @@ Here
 	it as
 
 	$$
-	C_w[i,j] = c_w \sum_{i=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
+	C_w[i,j] = c_w \sum_{l=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
 	$$
 
 	If you consider a person picked uniformly at random from region $R_i$, the
@@ -203,8 +204,8 @@ $$
 \begin{aligned}
 \dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
 \dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
-\dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I} + \sum_j \theta_{j,i}I_j \\
-\dot R_i &=  \frac{I_i}{t_I} + \sum_j \theta_{j,i}R_j
+\dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
+\dot R_i &=  \frac{I_i}{t_I}
 \end{aligned}
 $$
 
