@@ -1,183 +1,183 @@
-﻿fromName,toName,distance
-Ajanoor,Pallikkara,1
-Ajanoor,Pullurperiya,1
-Ajanoor,Madikkai,1
-Ajanoor,Kanhangadu,1
-Badiyadka,Enmakaje,1
-Badiyadka,Puthige,1
-Badiyadka,Madhur,1
-Badiyadka,Chengala,1
-Badiyadka,Kumbadaje,1
-Balal,Kallar,1
-Balal,Panathady,1
-Balal,East Eleri,1
-Balal,West Eleri,1
-Balal,Kinanoor Karinthalam,1
-Balal,Kodombellur,1
-Bedaduka,Muliyar,1
-Bedaduka,Delampady,1
-Bedaduka,Kuttikol,1
-Bedaduka,Kallar,1
-Bedaduka,Kodombellur,1
-Bedaduka,Pullurperiya,1
-Bedaduka,Pallikkara,1
-Bedaduka,Chemnad,1
-Belloor,Enmakaje,1
-Belloor,Kumbadaje,1
-Belloor,Karadka,1
-Chemnad,Kasargodu,1
-Chemnad,Chengala,1
-Chemnad,Muliyar,1
-Chemnad,Bedaduka,1
-Chemnad,Pallikkara,1
-Chemnad,Udma,1
-Chengala,Kasargodu,1
-Chengala,Madhur,1
-Chengala,Badiyadka,1
-Chengala,Kumbadaje,1
-Chengala,Karadka,1
-Chengala,Muliyar,1
-Cheruvathur,Nileshwaram,1
-Cheruvathur,Kayyur Cheemeni,1
-Cheruvathur,Pilicode,1
-Cheruvathur,Padne,1
-Cheruvathur,Valiyaparamba,1
-Delampady,Karadka,1
-Delampady,Kuttikol,1
-Delampady,Bedaduka,1
-Delampady,Muliyar,1
-East Eleri,West Eleri,1
-East Eleri,Balal,1
-Enmakaje,Belloor,1
-Enmakaje,Kumbadaje,1
-Enmakaje,Badiyadka,1
-Enmakaje,Puthige,1
-Kallar,Panathady,1
-Kallar,Balal,1
-Kallar,Kodombellur,1
-Kallar,Bedaduka,1
-Kallar,Kuttikol,1
-Kanhangadu,Madikkai,1
-Kanhangadu,Nileshwaram,1
-Kanhangadu,Ajanoor,1
-Karadka,Delampady,1
-Karadka,Muliyar,1
-Karadka,Chengala,1
-Karadka,Kumbadaje,1
-Karadka,Belloor,1
-Kasargodu,Chemnad,1
-Kasargodu,Chengala,1
-Kasargodu,Madhur,1
-Kasargodu,Mogral Puthur,1
-Kayyur Cheemeni,Kinanoor Karinthalam,1
-Kayyur Cheemeni,West Eleri,1
-Kayyur Cheemeni,Pilicode,1
-Kayyur Cheemeni,Cheruvathur,1
-Kayyur Cheemeni,Nileshwaram,1
-Kinanoor Karinthalam,Kayyur Cheemeni,1
-Kinanoor Karinthalam,Nileshwaram,1
-Kinanoor Karinthalam,Madikkai,1
-Kinanoor Karinthalam,Kodombellur,1
-Kinanoor Karinthalam,Balal,1
-Kinanoor Karinthalam,West Eleri,1
-Kodombellur,Bedaduka,1
-Kodombellur,Kallar,1
-Kodombellur,Balal,1
-Kodombellur,Kinanoor Karinthalam,1
-Kodombellur,Madikkai,1
-Kodombellur,Pullurperiya,1
-Kumbadaje,Belloor,1
-Kumbadaje,Karadka,1
-Kumbadaje,Chengala,1
-Kumbadaje,Badiyadka,1
-Kumbadaje,Enmakaje,1
-Kuttikol,Delampady,1
-Kuttikol,Panathady,1
-Kuttikol,Kallar,1
-Kuttikol,Bedaduka,1
-Kuttikol,Muliyar,1
-Madhur,Mogral Puthur,1
-Madhur,Puthige,1
-Madhur,Badiyadka,1
-Madhur,Chengala,1
-Madhur,Kasargodu,1
-Madikkai,Kanhangadu,1
-Madikkai,Ajanoor,1
-Madikkai,Pullurperiya,1
-Madikkai,Kodombellur,1
-Madikkai,Kinanoor Karinthalam,1
-Madikkai,Nileshwaram,1
-Mangalpady,Meenja,1
-Mangalpady,Manjewswaram,1
-Mangalpady,Paivalike,1
-Mangalpady,Kumbala,1
-Manjewswaram,Vorkady,1
-Manjewswaram,Meenja,1
-Manjewswaram,Mangalpady,1
-Meenja,Manjewswaram,1
-Meenja,Vorkady,1
-Meenja,Paivalike,1
-Meenja,Mangalpady,1
-Mogral Puthur,Madhur,1
-Mogral Puthur,Kasargodu,1
-Mogral Puthur,Kumbala,1
-Mogral Puthur,Puthige,1
-Muliyar,Chengala,1
-Muliyar,Karadka,1
-Muliyar,Delampady,1
-Muliyar,Bedaduka,1
-Muliyar,Chemnad,1
-Nileshwaram,Kanhangadu,1
-Nileshwaram,Madikkai,1
-Nileshwaram,Kinanoor Karinthalam,1
-Nileshwaram,Kayyur Cheemeni,1
-Nileshwaram,Cheruvathur,1
-Nileshwaram,Valiyaparamba,1
-Padne,Cheruvathur,1
-Padne,Pilicode,1
-Padne,Thrikkaripur,1
-Padne,Valiyaparamba,1
-Paivalike,Meenja,1
-Paivalike,Vorkady,1
-Paivalike,Puthige,1
-Paivalike,Kumbala,1
-Paivalike,Mangalpady,1
-Pallikkara,Udma,1
-Pallikkara,Chemnad,1
-Pallikkara,Bedaduka,1
-Pallikkara,Pullurperiya,1
-Pallikkara,Ajanoor,1
-Panathady,Kuttikol,1
-Panathady,Kallar,1
-Panathady,Balal,1
-Pilicode,Kayyur Cheemeni,1
-Pilicode,Cheruvathur,1
-Pilicode,Padne,1
-Pilicode,Thrikkaripur,1
-Pullurperiya,Pallikkara,1
-Pullurperiya,Bedaduka,1
-Pullurperiya,Kodombellur,1
-Pullurperiya,Madikkai,1
-Pullurperiya,Ajanoor,1
-Puthige,Kumbala,1
-Puthige,Paivalike,1
-Puthige,Enmakaje,1
-Puthige,Badiyadka,1
-Puthige,Madhur,1
-Puthige,Mogral Puthur,1
-Thrikkaripur,Padne,1
-Thrikkaripur,Pilicode,1
-Thrikkaripur,Valiyaparamba,1
-Udma,Chemnad,1
-Udma,Pallikkara,1
-Valiyaparamba,Nileshwaram,1
-Valiyaparamba,Cheruvathur,1
-Valiyaparamba,Padne,1
-Valiyaparamba,Thrikkaripur,1
-Vorkady,Manjewswaram,1
-Vorkady,Meenja,1
-Vorkady,Paivalike,1
-West Eleri,Kinanoor Karinthalam,1
-West Eleri,Balal,1
-West Eleri,East Eleri,1
-West Eleri,Kayyur Cheemeni,1
+﻿iName,jName,value
+Ajanoor,Pallikkara,0.01
+Ajanoor,Pullurperiya,0.01
+Ajanoor,Madikkai,0.01
+Ajanoor,Kanhangadu,0.01
+Badiyadka,Enmakaje,0.01
+Badiyadka,Puthige,0.01
+Badiyadka,Madhur,0.01
+Badiyadka,Chengala,0.01
+Badiyadka,Kumbadaje,0.01
+Balal,Kallar,0.01
+Balal,Panathady,0.01
+Balal,East Eleri,0.01
+Balal,West Eleri,0.01
+Balal,Kinanoor Karinthalam,0.01
+Balal,Kodombellur,0.01
+Bedaduka,Muliyar,0.01
+Bedaduka,Delampady,0.01
+Bedaduka,Kuttikol,0.01
+Bedaduka,Kallar,0.01
+Bedaduka,Kodombellur,0.01
+Bedaduka,Pullurperiya,0.01
+Bedaduka,Pallikkara,0.01
+Bedaduka,Chemnad,0.01
+Belloor,Enmakaje,0.01
+Belloor,Kumbadaje,0.01
+Belloor,Karadka,0.01
+Chemnad,Kasargodu,0.01
+Chemnad,Chengala,0.01
+Chemnad,Muliyar,0.01
+Chemnad,Bedaduka,0.01
+Chemnad,Pallikkara,0.01
+Chemnad,Udma,0.01
+Chengala,Kasargodu,0.01
+Chengala,Madhur,0.01
+Chengala,Badiyadka,0.01
+Chengala,Kumbadaje,0.01
+Chengala,Karadka,0.01
+Chengala,Muliyar,0.01
+Cheruvathur,Nileshwaram,0.01
+Cheruvathur,Kayyur Cheemeni,0.01
+Cheruvathur,Pilicode,0.01
+Cheruvathur,Padne,0.01
+Cheruvathur,Valiyaparamba,0.01
+Delampady,Karadka,0.01
+Delampady,Kuttikol,0.01
+Delampady,Bedaduka,0.01
+Delampady,Muliyar,0.01
+East Eleri,West Eleri,0.01
+East Eleri,Balal,0.01
+Enmakaje,Belloor,0.01
+Enmakaje,Kumbadaje,0.01
+Enmakaje,Badiyadka,0.01
+Enmakaje,Puthige,0.01
+Kallar,Panathady,0.01
+Kallar,Balal,0.01
+Kallar,Kodombellur,0.01
+Kallar,Bedaduka,0.01
+Kallar,Kuttikol,0.01
+Kanhangadu,Madikkai,0.01
+Kanhangadu,Nileshwaram,0.01
+Kanhangadu,Ajanoor,0.01
+Karadka,Delampady,0.01
+Karadka,Muliyar,0.01
+Karadka,Chengala,0.01
+Karadka,Kumbadaje,0.01
+Karadka,Belloor,0.01
+Kasargodu,Chemnad,0.01
+Kasargodu,Chengala,0.01
+Kasargodu,Madhur,0.01
+Kasargodu,Mogral Puthur,0.01
+Kayyur Cheemeni,Kinanoor Karinthalam,0.01
+Kayyur Cheemeni,West Eleri,0.01
+Kayyur Cheemeni,Pilicode,0.01
+Kayyur Cheemeni,Cheruvathur,0.01
+Kayyur Cheemeni,Nileshwaram,0.01
+Kinanoor Karinthalam,Kayyur Cheemeni,0.01
+Kinanoor Karinthalam,Nileshwaram,0.01
+Kinanoor Karinthalam,Madikkai,0.01
+Kinanoor Karinthalam,Kodombellur,0.01
+Kinanoor Karinthalam,Balal,0.01
+Kinanoor Karinthalam,West Eleri,0.01
+Kodombellur,Bedaduka,0.01
+Kodombellur,Kallar,0.01
+Kodombellur,Balal,0.01
+Kodombellur,Kinanoor Karinthalam,0.01
+Kodombellur,Madikkai,0.01
+Kodombellur,Pullurperiya,0.01
+Kumbadaje,Belloor,0.01
+Kumbadaje,Karadka,0.01
+Kumbadaje,Chengala,0.01
+Kumbadaje,Badiyadka,0.01
+Kumbadaje,Enmakaje,0.01
+Kuttikol,Delampady,0.01
+Kuttikol,Panathady,0.01
+Kuttikol,Kallar,0.01
+Kuttikol,Bedaduka,0.01
+Kuttikol,Muliyar,0.01
+Madhur,Mogral Puthur,0.01
+Madhur,Puthige,0.01
+Madhur,Badiyadka,0.01
+Madhur,Chengala,0.01
+Madhur,Kasargodu,0.01
+Madikkai,Kanhangadu,0.01
+Madikkai,Ajanoor,0.01
+Madikkai,Pullurperiya,0.01
+Madikkai,Kodombellur,0.01
+Madikkai,Kinanoor Karinthalam,0.01
+Madikkai,Nileshwaram,0.01
+Mangalpady,Meenja,0.01
+Mangalpady,Manjewswaram,0.01
+Mangalpady,Paivalike,0.01
+Mangalpady,Kumbala,0.01
+Manjewswaram,Vorkady,0.01
+Manjewswaram,Meenja,0.01
+Manjewswaram,Mangalpady,0.01
+Meenja,Manjewswaram,0.01
+Meenja,Vorkady,0.01
+Meenja,Paivalike,0.01
+Meenja,Mangalpady,0.01
+Mogral Puthur,Madhur,0.01
+Mogral Puthur,Kasargodu,0.01
+Mogral Puthur,Kumbala,0.01
+Mogral Puthur,Puthige,0.01
+Muliyar,Chengala,0.01
+Muliyar,Karadka,0.01
+Muliyar,Delampady,0.01
+Muliyar,Bedaduka,0.01
+Muliyar,Chemnad,0.01
+Nileshwaram,Kanhangadu,0.01
+Nileshwaram,Madikkai,0.01
+Nileshwaram,Kinanoor Karinthalam,0.01
+Nileshwaram,Kayyur Cheemeni,0.01
+Nileshwaram,Cheruvathur,0.01
+Nileshwaram,Valiyaparamba,0.01
+Padne,Cheruvathur,0.01
+Padne,Pilicode,0.01
+Padne,Thrikkaripur,0.01
+Padne,Valiyaparamba,0.01
+Paivalike,Meenja,0.01
+Paivalike,Vorkady,0.01
+Paivalike,Puthige,0.01
+Paivalike,Kumbala,0.01
+Paivalike,Mangalpady,0.01
+Pallikkara,Udma,0.01
+Pallikkara,Chemnad,0.01
+Pallikkara,Bedaduka,0.01
+Pallikkara,Pullurperiya,0.01
+Pallikkara,Ajanoor,0.01
+Panathady,Kuttikol,0.01
+Panathady,Kallar,0.01
+Panathady,Balal,0.01
+Pilicode,Kayyur Cheemeni,0.01
+Pilicode,Cheruvathur,0.01
+Pilicode,Padne,0.01
+Pilicode,Thrikkaripur,0.01
+Pullurperiya,Pallikkara,0.01
+Pullurperiya,Bedaduka,0.01
+Pullurperiya,Kodombellur,0.01
+Pullurperiya,Madikkai,0.01
+Pullurperiya,Ajanoor,0.01
+Puthige,Kumbala,0.01
+Puthige,Paivalike,0.01
+Puthige,Enmakaje,0.01
+Puthige,Badiyadka,0.01
+Puthige,Madhur,0.01
+Puthige,Mogral Puthur,0.01
+Thrikkaripur,Padne,0.01
+Thrikkaripur,Pilicode,0.01
+Thrikkaripur,Valiyaparamba,0.01
+Udma,Chemnad,0.01
+Udma,Pallikkara,0.01
+Valiyaparamba,Nileshwaram,0.01
+Valiyaparamba,Cheruvathur,0.01
+Valiyaparamba,Padne,0.01
+Valiyaparamba,Thrikkaripur,0.01
+Vorkady,Manjewswaram,0.01
+Vorkady,Meenja,0.01
+Vorkady,Paivalike,0.01
+West Eleri,Kinanoor Karinthalam,0.01
+West Eleri,Balal,0.01
+West Eleri,East Eleri,0.01
+West Eleri,Kayyur Cheemeni,0.01
