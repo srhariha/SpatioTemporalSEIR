@@ -1,5 +1,6 @@
 ---
-title: A Spatio-Temporal Simulator for Spread of Covid-19 in Kerala
+title: A Spatio-temporal siimulator to model the likely spread of
+		Covid-19 in Kerala
 fontsize: 12pt
 geometry: margin=2cm
 ---
@@ -29,8 +30,10 @@ for experts in community health to corroborate their intuition against a mathema
 
 5. 	Spatio-temporal effect of various lockdown strategies can be tried out by
 	the user. Some examples of lockdown strategies include
-	(a) Lockdown a panchayat for $`d`$ days if there are more than $c$ active cases in that panchayat.
-	(b) Lockdown a panchayat and its neighbouring panchayats for $d$ days if there are more than $c$ active cases in that panchayat.
+	(a) Lockdown a panchayat for $d$ days if there are more than $c$ active
+		cases in that panchayat.  
+	(b) Lockdown a panchayat and its neighbouring panchayats for $d$ days if
+		there are more than $c$ active cases in that panchayat.
 
 6.	A lockdown strategy will be declared as *safe* if the demand for number of
 	cases needing hospitalisation is within the capacity of the corresponding
@@ -65,15 +68,14 @@ for experts in community health to corroborate their intuition against a mathema
 The SEIHR model considers the total population $N_i$ in a region $R_i$ as being
 split into five compartments based on their stage of infection. The number of
 people in these five compartments is a function of time but they always add to
-$N_i$. Hence for every region $R_i$, 
-$$S_i(t) + E_i(t) + I_i(t) + H_i(t) + R_i(t) = N_i.$$ 
+$N_i$. 
 
--	S : Susceptible (before virus enters their body)
--	E : Exposed (virus is multiplying inside their body but they are not
-	infectious/contagious yet)
--	I : Infectious
--	H : Not infectious but still hospitalised
--	R : Removed (recovered + dead)
+-	$S$ : Susceptible (before virus enters their body)
+-	$E$ : Exposed (virus is multiplying inside their body but they are not
+		infectious/contagious yet)
+-	$I$ : Infectious
+-	$H$ : Not infectious but still hospitalised
+-	$R$ : Removed (recovered + dead)
 
 The reason to add a separate category H to the standard SEIR model is to estimate the load on hospital beds. The number of hospital beds will be a function of I + H and not I alone.
 
@@ -82,11 +84,11 @@ The reason to add a separate category H to the standard SEIR model is to estimat
 If we discretize time $t$ to represent days, then we can write the update
 equations as
 $$\begin{aligned}
-\Delta S_i	 &= -\beta S_i \frac{I_i}{N_i} \\
-\Delta E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
-\Delta I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\Delta H_i	 &= \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
-\Delta R_i	 &= \frac{H_i}{t_H}\\
+\dot S_i	 &= -\beta S_i \frac{I_i}{N_i} \\
+\dot E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
+\dot I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
+\dot H_i	 &= \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
+\dot R_i	 &= \frac{H_i}{t_H}\\
 \end{aligned}$$
 
 Here 
@@ -96,8 +98,10 @@ Here
 		infectious person catches the disease (not all contacts transmit the
 		disease)
 
-	-	$c$ is the expected number of people that a susceptible contacts in a
-		day
+	-	$c$ is the expected number of people that a susceptible person contacts
+		in a day. Going further we will have to model it as $c = c_h + c_w$,
+		where $c_h$ and $c_w$ are the expected number of people that a
+		susceptible person contacts at home and work/school respectively.
 
 	-	$c \frac{I_i}{N_i}$ therefore, is the expected number of infectious
 		people that a susceptible person contacts in a day.
@@ -112,7 +116,8 @@ Here
 
 -	$\pi \approx 0.02$, this can reduce with the use of masks and regular
 	cleansing.
--	$\kappa$ is typically 20 on a normal day and 5 on a lockdown day.
+-	$c_h \approx 5$
+-	$c_w$ is typically 15 on a normal day and 0 on a lockdown day.
 -	$t_E \approx 5$
 -	$t_I \approx 5$
 -	$t_H \approx 9$
@@ -121,20 +126,23 @@ Here
 ## Spatial mixing (Radiation Model)
 
 1.	We say that a person *travels* from region $R_1$ to region $R_2$, if she
-	lives in $R_1$ but works mostly in $R_2$.
+	lives in $R_1$ but works mostly in $R_2$. We will assume that there are
+	$r$ regions in total.
 
 2.	**Radiation model.**
 	The number of people $T_{i,j}$ travelling from region $R_i$ to region $R_j$
 	on a working day is modelled as
-	$$ T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},$$
+	$$
+		T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},
+	$$
 	where 
 
 	- $N_i$ is the population of $R_i$
 
 	- $N_j$ is the population of $R_j$ 
 
-	- $T_i$ is the total number of people who travel for work from region
-	  $R_i$.  At larger granularity this data for each region may be available
+	- $T_i$ is the total number of people who travel out for work from region
+	  $R_i$.  At a larger granularity this data for each region may be available
 	  from Census. Otherwise, one can model it as $T_i = \mu N_i$, pick $\mu$
 	  from the census data.  The proportion of people who travel more than 5 km
 	  for work may be a good proxy for $\mu$ at LSGD level (need to discuss
@@ -142,17 +150,37 @@ Here
 
 	- $S_{i,j}$ is the total population in all the regions (except $R_i$ itself) 
 	  which are closer to $R_i$ than $R_j$. That is,
-	  $S_{i,j} = \sum \{N_k :~ 0 < d(R_k, R_i) < d(R_j, R_i)\}$.
+	  $$
+	  	S_{i,j} = \sum_{k=1}^{r} \{N_k :~ 0 < d(R_k, R_i) < d(R_j, R_i)\}.
+	  $$
+	  It turns out that $T_i = \sum T_{i,j}$. We will also set $T_{i,i} = N_i -
+	  T_i$, which can be interpretted as the number of people from region $R_i$
+	  travelling to $R_i$ itself. This will make the future summations easier
+	  to write.
 
-	It turns out that $T_i = \sum T_{i,j}$.
+3.	**Workplace Contact Matrix.** 
+	This is an $r \times r$ matrix $C_w$ in which the entry $C_w[i,j]$ is 
+	the expected number of people from region $R_j$ that a susceptible person
+	from region $R_i$ will contact at workplace/school in a day. We model
+	it as
+	$$
+		C_w[i,j] = c_w \sum_{i=1}^{r} \frac{T_{i,k}}{N_i} 
+			\frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
+	$$
+	If you consider a person picked uniformly at random from region $R_i$, the
+	term $\frac{T_{i,k}}{N_i}$ can be interpretted as the probability that she
+	goes for work in region $R_k$ and the term	$\frac{T_{j,k}}{\sum_{l=1}^{r}
+	T_{l,k}}$ can be interpretted as th probability that a person she contacts
+	at workplace (in region $R_k$) has come to work there from region $R_j$.
+	Notice that the total number of people in region $R_k$ during the day is
+	not $N_k$ but $\sum_{l=1}^{r} T_{l,k}$. Since we have chosen $T_{k,k}$ as
+	$N_k - T_k$, this sum will account for the people leaving and entering
+	$R_k$ for work.
 
-3.	**Travel Rate**
-	$$
-		\theta_{i,j} = \frac{T_{i,j}}{N_i}
-	$$
-	This can be thought of as the rate at which people from region $R_i$ travel
-	to region $R_i$ for work or as the probability that a person in region
-	$R_i$ travels to region $R_j$ for work.
+4.	**Contact Matrix.**
+	The contact matrix $C$ is obtained by adding $c_h$ to each diagonal
+	entry of $C_w$. This is justified since all household contacts happen
+	in the region of a person's living.
 
 ### Current parameter choices
 
@@ -165,21 +193,36 @@ a [2016 paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5348083/).
 This seems to miss the travel out of region $R_i$.
 $$
 \begin{aligned}
-	\Delta S_i &= 	- \beta S_i \frac{I_i}{N_i} 
-					+ \sum_j \theta_{j,i}S_j \\
-	\Delta E_i &=     \beta S_i \frac{I_i}{N_i}
-					- \frac{E_i}{t_E} 
-					+ \sum_j \theta_{j,i}E_j \\
-	\Delta I_i &=	  \frac{E_i}{t_E} 
+	\dot S_i &= 	- \pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
+	\dot E_i &= 	  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j}
+					- \frac{E_i}{t_E} \\
+	\dot I_i &=	  \frac{E_i}{t_E} 
 					- \frac{I_i}{t_I} 
 					+ \sum_j \theta_{j,i}I_j \\
-	\Delta R_i &=     \frac{I_i}{t_I} 
+	\dot R_i &=     \frac{I_i}{t_I} 
 					+ \sum_j \theta_{j,i}R_j
 \end{aligned}
 $$
 
+The sum $\sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j}$ can be implemented
+as a matrix-vector multiplication if that will speed up the code.
 
-## Mitigation strategies
+## Modelling Mitigation strategies
+
+1.	Every lockdown strategy is a control on the matrix $C_w$. Lockdown in a
+	region $R_i$ can be modelled by zeroing out the $i$-th row and column of
+	$C_w$ or by scaling it down by a fraction like $0.1$ to allow for the
+	essential services. A time dependent lockdown strategy will do this
+	tweaking with the $C_w$ matrix differently at different time-steps.
+
+2.	Break-the-chain campaigns like masks, hand sanitizers, social distancing
+	etc are a control on $\pi$.
+
+3. 	Effect of contact tracing and quarantining suspected contacts is difficult
+	to be modelled in our setup.
+
+4.	To model the effect of isolating symptomatic patients, we will need
+	to split the compartment $I$.
 
 ## Justifying the model and parameter choices
 
