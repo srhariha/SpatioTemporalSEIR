@@ -83,13 +83,16 @@ The reason to add a separate category H to the standard SEIR model is to estimat
 
 If we discretize time $t$ to represent days, then we can write the update
 equations as
-$$\begin{aligned}
+
+$$
+\begin{aligned}
 \dot S_i	 &= -\beta S_i \frac{I_i}{N_i} \\
 \dot E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
 \dot I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
 \dot H_i	 &= \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
 \dot R_i	 &= \frac{H_i}{t_H}\\
-\end{aligned}$$
+\end{aligned}
+$$
 
 Here 
 
@@ -132,8 +135,9 @@ Here
 2.	**Radiation model.**
 	The number of people $T_{i,j}$ travelling from region $R_i$ to region $R_j$
 	on a working day is modelled as
+
 	$$
-		T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},
+	T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},
 	$$
 	where 
 
@@ -150,9 +154,11 @@ Here
 
 	- $S_{i,j}$ is the total population in all the regions (except $R_i$ itself) 
 	  which are closer to $R_i$ than $R_j$. That is,
+
 	  $$
-	  	S_{i,j} = \sum_{k=1}^{r} \{N_k :~ 0 < d(R_k, R_i) < d(R_j, R_i)\}.
+	  S_{i,j} = \sum_{k=1}^{r} \{N_k :~ 0 < d(R_k, R_i) < d(R_j, R_i)\}.
 	  $$
+
 	  It turns out that $T_i = \sum T_{i,j}$. We will also set $T_{i,i} = N_i -
 	  T_i$, which can be interpretted as the number of people from region $R_i$
 	  travelling to $R_i$ itself. This will make the future summations easier
@@ -163,10 +169,11 @@ Here
 	the expected number of people from region $R_j$ that a susceptible person
 	from region $R_i$ will contact at workplace/school in a day. We model
 	it as
+
 	$$
-		C_w[i,j] = c_w \sum_{i=1}^{r} \frac{T_{i,k}}{N_i} 
-			\frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
+	C_w[i,j] = c_w \sum_{i=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
 	$$
+
 	If you consider a person picked uniformly at random from region $R_i$, the
 	term $\frac{T_{i,k}}{N_i}$ can be interpretted as the probability that she
 	goes for work in region $R_k$ and the term	$\frac{T_{j,k}}{\sum_{l=1}^{r}
@@ -191,16 +198,13 @@ Here
 The following equations are adapted from Eqn (4), Section 3.1.2 in 
 a [2016 paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5348083/).
 This seems to miss the travel out of region $R_i$.
+
 $$
 \begin{aligned}
-	\dot S_i &= 	- \pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
-	\dot E_i &= 	  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j}
-					- \frac{E_i}{t_E} \\
-	\dot I_i &=	  \frac{E_i}{t_E} 
-					- \frac{I_i}{t_I} 
-					+ \sum_j \theta_{j,i}I_j \\
-	\dot R_i &=     \frac{I_i}{t_I} 
-					+ \sum_j \theta_{j,i}R_j
+\dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
+\dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
+\dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I} + \sum_j \theta_{j,i}I_j \\
+\dot R_i &=  \frac{I_i}{t_I} + \sum_j \theta_{j,i}R_j
 \end{aligned}
 $$
 
