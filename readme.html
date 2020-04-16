@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>A Spatio-Temporal Simulator for Spread of Covid-19 in Kerala</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+   var mathElements = document.getElementsByClassName("math");
+   for (var i = 0; i < mathElements.length; i++) {
+    var texText = mathElements[i].firstChild;
+    if (mathElements[i].tagName == "SPAN") {
+     katex.render(texText.data, mathElements[i], {
+      displayMode: mathElements[i].classList.contains('display'),
+      throwOnError: false,
+      fleqn: false
+     });
+  }}});
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">A Spatio-Temporal Simulator for Spread of Covid-19 in Kerala</h1>
+</header>
+<h2 id="aim">Aim</h2>
+<p>To build a spatio-temporal simulator that can predict the spread of Covid-19 in Kerala under different mitigation strategies. We hope that this will be useful for experts in community health to corroborate their intuition against a mathematical prediction.</p>
+<h2 id="key-features">Key features</h2>
+<ol type="1">
+<li><p>The resolution of the model is at the smallest local self-governing division (LSGD) in Kerala. That is, grama panchayat, municipality or municipal corporation.</p></li>
+<li><p>The predictions are based on available information about the characteristics of the disease, the geographic and demographic data of Kerala and the statistics of reported cases so far.</p></li>
+<li><p>The time evolution of the disease in each LSGD is modelled using a deterministic <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SEIR_model">SEIR model</a> fine-tuned for Covid-19.</p></li>
+<li><p>The mixing of population between panchayats is based on the <a href="https://en.wikipedia.org/wiki/Radiation_law_for_human_mobility"><em>radiation law</em> for human mobility</a></p></li>
+<li><p>Spatio-temporal effect of various lockdown strategies can be tried out by the user. Some examples of lockdown strategies include</p>
+<ol type="a">
+<li>Lockdown a panchayat for <span class="math inline">`d`</span> days if there are more than <span class="math inline">c</span> active cases in that panchayat.</li>
+<li>Lockdown a panchayat and its neighbouring panchayats for <span class="math inline">d</span> days if there are more than <span class="math inline">c</span> active cases in that panchayat.</li>
+</ol></li>
+<li><p>A lockdown strategy will be declared as <em>safe</em> if the demand for number of cases needing hospitalisation is within the capacity of the corresponding LSGD at every point in time. Other strategies will be declared as <em>unsafe</em>. A quality parameter will be reported for each safe strategy tried. The quality parameter is equal to the average number of working days (non-lockdown days) per person for the next year.</p></li>
+<li><p>The system will automatically try out various lockdown strategies in the backend and provide a small set of safe strategies which acheive high values for the above quality parameter.</p></li>
+</ol>
+<h2 id="user-interface">User interface</h2>
+<ol type="1">
+<li><p>A web dashboard like <a href="https://covid19-scenarios.org/">Covid19-Scenarios</a> with added map-based animations like <a href="https://ourworldindata.org/grapher/total-covid-deaths-per-million">OurWoldInData</a> for projected data.</p></li>
+<li><p>The user can try out the effect of various spatio-temporal lockdown strategies like those available in <a href="https://covid-measures.github.io/">CovidMeasures</a></p></li>
+<li><p>A discussion forum (not sure if it is needed or not)</p></li>
+<li><p>A logging of crowd-sourced high quality strategies (again, not sure)</p></li>
+</ol>
+<h2 id="time-evolution-seihr-model---biren-might-update-this">Time evolution (SEIHR Model) - Biren might update this</h2>
+<figure>
+<img src="./SEIHR.png" alt="" /><figcaption>SEIHR model without mixing between regions</figcaption>
+</figure>
+<p>The SEIHR model considers the total population <span class="math inline">N_i</span> in a region <span class="math inline">R_i</span> as being split into five compartments based on their stage of infection. The number of people in these five compartments is a function of time but they always add to <span class="math inline">N_i</span>. Hence for every region <span class="math inline">R_i</span>, <span class="math display">S_i(t) + E_i(t) + I_i(t) + H_i(t) + R_i(t) = N_i.</span></p>
+<ul>
+<li>S : Susceptible (before virus enters their body)</li>
+<li>E : Exposed (virus is multiplying inside their body but they are not infectious/contagious yet)</li>
+<li>I : Infectious</li>
+<li>H : Not infectious but still hospitalised</li>
+<li>R : Removed (recovered + dead)</li>
+</ul>
+<p>The reason to add a separate category H to the standard SEIR model is to estimate the load on hospital beds. The number of hospital beds will be a function of I + H and not I alone.</p>
+<h3 id="update-equations">Update equations</h3>
+<p>If we discretize time <span class="math inline">t</span> to represent days, then we can write the update equations as <span class="math display">\begin{aligned}
+\Delta S_i   &amp;= -\beta S_i \frac{I_i}{N_i} \\
+\Delta E_i   &amp;= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
+\Delta I_i   &amp;= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
+\Delta H_i   &amp;= \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
+\Delta R_i   &amp;= \frac{H_i}{t_H}\\
+\end{aligned}</span></p>
+<p>Here</p>
+<ul>
+<li><span class="math inline">\beta = \pi c</span>, where
+<ul>
+<li><p><span class="math inline">\pi</span> is the probability that a susceptible person who contacts an infectious person catches the disease (not all contacts transmit the disease)</p></li>
+<li><p><span class="math inline">c</span> is the expected number of people that a susceptible contacts in a day</p></li>
+<li><p><span class="math inline">c \frac{I_i}{N_i}</span> therefore, is the expected number of infectious people that a susceptible person contacts in a day.</p></li>
+<li><p><span class="math inline">\pi c \frac{I_i}{N_i}</span> therefore, is the probability that that a susceptible person catches the disease in a day.</p></li>
+</ul></li>
+<li><span class="math inline">t_E</span>, <span class="math inline">t_I</span> and <span class="math inline">t_R</span> are the mean time that a person spends in the respective compartments, before moving onto the next.</li>
+</ul>
+<h3 id="current-parameter-choices">Current parameter choices</h3>
+<ul>
+<li><span class="math inline">\pi \approx 0.02</span>, this can reduce with the use of masks and regular cleansing.</li>
+<li><span class="math inline">\kappa</span> is typically 20 on a normal day and 5 on a lockdown day.</li>
+<li><span class="math inline">t_E \approx 5</span></li>
+<li><span class="math inline">t_I \approx 5</span></li>
+<li><span class="math inline">t_H \approx 9</span></li>
+</ul>
+<h2 id="spatial-mixing-radiation-model">Spatial mixing (Radiation Model)</h2>
+<ol type="1">
+<li><p>We say that a person <em>travels</em> from region <span class="math inline">R_1</span> to region <span class="math inline">R_2</span>, if she lives in <span class="math inline">R_1</span> but works mostly in <span class="math inline">R_2</span>.</p></li>
+<li><p><strong>Radiation model.</strong> The number of people <span class="math inline">T_{i,j}</span> travelling from region <span class="math inline">R_i</span> to region <span class="math inline">R_j</span> on a working day is modelled as <span class="math display"> T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},</span> where</p>
+<ul>
+<li><p><span class="math inline">N_i</span> is the population of <span class="math inline">R_i</span></p></li>
+<li><p><span class="math inline">N_j</span> is the population of <span class="math inline">R_j</span></p></li>
+<li><p><span class="math inline">T_i</span> is the total number of people who travel for work from region <span class="math inline">R_i</span>. At larger granularity this data for each region may be available from Census. Otherwise, one can model it as <span class="math inline">T_i = \mu N_i</span>, pick <span class="math inline">\mu</span> from the census data. The proportion of people who travel more than 5 km for work may be a good proxy for <span class="math inline">\mu</span> at LSGD level (need to discuss this).</p></li>
+<li><p><span class="math inline">S_{i,j}</span> is the total population in all the regions (except <span class="math inline">R_i</span> itself) which are closer to <span class="math inline">R_i</span> than <span class="math inline">R_j</span>. That is, <span class="math inline">S_{i,j} = \sum \{N_k :~ 0 &lt; d(R_k, R_i) &lt; d(R_j, R_i)\}</span>.</p></li>
+</ul>
+<p>It turns out that <span class="math inline">T_i = \sum T_{i,j}</span>.</p></li>
+<li><p><strong>Travel Rate</strong> <span class="math display">
+    \theta_{i,j} = \frac{T_{i,j}}{N_i}
+</span> This can be thought of as the rate at which people from region <span class="math inline">R_i</span> travel to region <span class="math inline">R_i</span> for work or as the probability that a person in region <span class="math inline">R_i</span> travels to region <span class="math inline">R_j</span> for work.</p></li>
+</ol>
+<h3 id="current-parameter-choices-1">Current parameter choices</h3>
+<ul>
+<li><span class="math inline">\mu \approx 0.01</span> (will update after looking at census data)</li>
+</ul>
+<h2 id="spatio-temporal-evolution">Spatio-Temporal Evolution</h2>
+<p>The following equations are adapted from Eqn (4), Section 3.1.2 in a <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5348083/">2016 paper</a>. This seems to miss the travel out of region <span class="math inline">R_i</span>. <span class="math display">
+\begin{aligned}
+    \Delta S_i &amp;=   - \beta S_i \frac{I_i}{N_i} 
+                    + \sum_j \theta_{j,i}S_j \\
+    \Delta E_i &amp;=     \beta S_i \frac{I_i}{N_i}
+                    - \frac{E_i}{t_E} 
+                    + \sum_j \theta_{j,i}E_j \\
+    \Delta I_i &amp;=     \frac{E_i}{t_E} 
+                    - \frac{I_i}{t_I} 
+                    + \sum_j \theta_{j,i}I_j \\
+    \Delta R_i &amp;=     \frac{I_i}{t_I} 
+                    + \sum_j \theta_{j,i}R_j
+\end{aligned}
+</span></p>
+<h2 id="mitigation-strategies">Mitigation strategies</h2>
+<h2 id="justifying-the-model-and-parameter-choices">Justifying the model and parameter choices</h2>
+<h2 id="team">Team</h2>
+<ul>
+<li>Arun Ramachandran</li>
+<li>Birenjith P. S.</li>
+<li>Deepak R.</li>
+<li>Sajith V. K.</li>
+<li>Sreeram H.</li>
+</ul>
+</body>
+</html>
