@@ -157,7 +157,7 @@ Here
 	  which are closer to $R_i$ than $R_j$. That is,
 
 	  $$
-	  S_{i,j} = \sum_{k=1}^{r} \{N_k :~ 0 < d(R_k, R_i) < d(R_j, R_i)\}.
+	  S_{i,j} = \sum_{k=1}^{r} \{N_k :~ d(R_k, R_i) \leq d(R_j, R_i)\} - N_i - N_j.
 	  $$
 
 	  It turns out that $T_i = \sum T_{i,j}$. We will also set $T_{i,i} = N_i -
