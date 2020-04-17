@@ -172,7 +172,7 @@ Here
 	it as
 
 	$$
-	C_w[i,j] = c_w \sum_{l=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
+	C_w[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
 	$$
 
 	If you consider a person picked uniformly at random from region $R_i$, the
@@ -196,16 +196,13 @@ Here
 
 ## Spatio-Temporal Evolution
 
-The following equations are adapted from Eqn (4), Section 3.1.2 in 
-a [2016 paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5348083/).
-This seems to miss the travel out of region $R_i$.
-
 $$
 \begin{aligned}
 \dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
 \dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
 \dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot R_i &=  \frac{I_i}{t_I}
+\dot H_i &=	 \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
+\dot R_i &=  \frac{H_i}{t_H}
 \end{aligned}
 $$
 
@@ -231,6 +228,97 @@ as a matrix-vector multiplication if that will speed up the code.
 
 ## Justifying the model and parameter choices
 
+### Radiation Model
+
+The *radiation model* was proposed by Simini et al.[^1] in 2012 as an
+alternative to the very popular gravity model. The model equation is derived
+based on three assumptions, one behavioral and two economic.
+
+1. *Behavioural.* A person who decides to move out of his home panchayat for a
+   job, settles for the nearest job that pays more than the highest paying job
+   in his own panchayat.
+
+2.	*Economic 1.* The number of jobs in a region is proportional to the number of
+	people living in that region.
+
+3.	*Economic 2.* The salary for a job is an independent and identically
+	distributed continuous random variable. That is salary for one job is
+	independent of the salary for another.and the salary distribution is
+	identical in every location.
+
+One can debate on the "correctness" of the above assumptions. But the claim to
+existence of a model is not its correctness but its usefulness. Studies have
+compared the predictions of the model against the actual job-seeking patterns
+in various places and found good fitment (add references). The feature that
+makes this model most useful is that it is parameter-free and hence
+"universal".  
+
+To paint an analogy, one can imagine a job to be a tower at the job location
+whose height is the pay package. The behavioural assumption above says that,
+when a person is unsatisfied with the towers in her panchayat, she climbs to
+the top of the tallest tower in her panchayat and looks all around. Among all
+the towers that are taller than the one she is standing on, she chooses the one
+which is at a panchayat closest to her panchayat.  That's the job she will
+settle for.
+
+Let's assume that a person living in panchayat $R_i$ decides to find a job
+ourside $R_i$. We will calculate the probability that she settles for a job a
+panchayat $R_j$ ($j \neq i$). We denote the probability density function (pdf)
+of the salary distribution by $f$. That is $\int_a^b f(x)dx$ gives the
+probability that the salary is more than $a$ but less than $b$. The cumulative
+distribution function (cdf) for the random variable is $F(x) :=
+\int_{-\infty}^{x} f(y) dy$. That is $F(x)$ is the probability that the salary
+is less than $x$ and $f(x) = \frac{dF(x)}{dx}$. Since we are dealing with a
+continuous random variable we do not have to be pedantic about whether the
+boundary of the interval is included or not. That will not change the
+probability.
+
+Let $N_i$ and $N_j$, respectively, be the number of jobs in panchayat $R_i$ and
+$R_j$. Let $d$ be the distance between $R_i$ and $R_j$. The distance between
+two regions is the distance between their centers. Let $S_{i,j}$ be all the
+jobs that are in outside panchayats which are at a distance less than $d$ from
+$R_i$. Let $M$ be the maximum salary in $R_i$. One can see that $M < x$ if and
+only if all the $N_i$ jobs in $R_i$ pays less than $x$. This happens with
+probability $F(x)^{N_i}$. That is, the cdf for $M$ is $F_M(x)= F(x)^{N_i}$
+and hence the pdf for $M$ is $f_M(x) = \frac{dF_M(x)}{dx} = N_i F(x)^{N_i - 1}
+\frac{dF(x)}{dx}$.
+
+By the
+behavioural assumption (the tower story), she lands a job in $R_j$ only if both the conditions below are satisfied.
+
+1. All the $S_{i,j}$ jobs which are available in panchayats closer than $d$ to
+   $R_i$ pay less than $M$. This happens with probability $F(M)^{S_{i,j}}$
+   since $F(M)$ is the probability that one job pays less than $M$ and we have
+   $S_{i,j}$ independent jobs.
+	
+2. Panchayat $R_j$ has at least one job which pays more than $M$. This happens
+   with probability $1 - F(M)^{N_j}$.
+
+So the probability that she lands a job in $R_j$ is the product of the two
+probabilities above is $p_{i,j}(M) = F(M)^{S_{i,j}}\left(1 -
+F(M)^{N_j}\right)$. This is still a function of $M$, the maximum salary in
+panchayat $R_i$. To remove this dependence we have to to take the expectation
+over $M$. That is 
+$$ 
+\begin{aligned}
+p
+&= \int_{-\infty}^{\infty} p_{i,j}(x) f_M(x) dx \\
+%&= \int_{-\infty}^{\infty}  F(x)^{S_{i,j}}\left(1 - F(x)^{N_j}\right) f_M(x) dx \\
+&= \int_{-\infty}^{\infty}  F(x)^{S_{i,j}}\left(1 - F(x)^{N_j}\right) N_i F(x)^{N_i-1} \frac{dF(x)}{dx} dx \\
+&= N_i \int_{-\infty}^{\infty}  \left( F(x)^{S_{i,j} + N_i - 1} - F(x)^{S_{i,j} + N_j + N_i -1} \right) \frac{dF(x)}{dx} dx \\
+%&= N_i \frac{F(x)^{S_{i,j} + N_i}{S_{i,j} + N_i} - \frac{F(x)^{S_{i,j} + N_j + N_i}}{S_{i,j} + N_j + N_i}  \\
+&= N_i \left( \frac{1}{S_{i,j} + N_i} - \frac{1}{S_{i,j} + N_j + N_i} \right) \\
+&= \frac{N_i N_j}{\left(S_{i,j} + N_i\right) \left(S_{i,j} + N_j + N_i \right)}
+\end{aligned}
+$$
+
+It is important to remember that the model only tells what fraction of the
+people living in a region $R_i$ who decide to move out for a job settle for a
+job in region $R_j$. It does not model the number of people who decide to move
+out.
+
+
+
 ## Team
 
 - Arun Ramachandran
@@ -238,3 +326,12 @@ as a matrix-vector multiplication if that will speed up the code.
 - Deepak R.
 - Sajith V. K.
 - Sreeram H.
+
+
+
+[^1]: Simini, Filippo, Marta C. González, Amos Maritan, and Albert-László
+  Barabási. "[A universal model for mobility and migration patterns.][1]"
+  Nature 484, no. 7392 (2012): 96-100.
+
+[1]: https://doi.org/10.1038/nature10856
+
