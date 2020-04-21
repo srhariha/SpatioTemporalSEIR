@@ -1,0 +1,7 @@
+*.log
+*.dvi
+*.pdf
+.ipynb_checkpoints/*
+src/.ipynb_checkpoints/*
+output/.ipynb_checkpoints/*
+.~*
