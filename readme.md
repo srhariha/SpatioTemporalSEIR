@@ -129,43 +129,91 @@ Here
 
 # Spatial mixing (Radiation Model)
 
-1.	We say that a person *travels* from region $R_1$ to region $R_2$, if she
-	lives in $R_1$ but works mostly in $R_2$. We will assume that there are
-	$r$ regions in total.
+We say that a person *travels* from region $R_1$ to region $R_2$, if she lives
+in $R_1$ but works mostly in $R_2$. We will assume that there are $r$ regions
+in total.
 
-2.	**Radiation model.**
-	The number of people $T_{i,j}$ travelling from region $R_i$ to region $R_j$
-	on a working day is modelled as
+## Radiation model
 
-	$$
-	T_{i,j} = T_i \frac {N_i N_j}{(N_i + S_{i,j})(N_i + N_j + S_{i,j})},
-	$$
-	where 
+The number of people $T_{i,j}$ travelling from region $R_i$ to region $R_j$ on
+a working day is modelled as
 
+$$
+T_{i,j} = T_i \frac {J_i J_j}{(J_i + S_{i,j})(J_i + J_j + S_{i,j})},
+$$
+where 
+
+- $J_i$ is the number of job opportunities in $R_i$. It will be great if one
+  can find these numbers from a primary source. In the absence of such a
+  source, we model it as $J_i = \zeta N_i$, where 
 	- $N_i$ is the population of $R_i$
+	- $\zeta = 0.1$ for grama panchayats,
+	- $\zeta = 0.2$ for municipalities and 
+	- $\zeta = 0.3$ for corporations
 
-	- $N_j$ is the population of $R_j$ 
+  (Only the relative magnitudes of the three zeta's matter)
 
-	- $T_i$ is the total number of people who travel out for work from region
-	  $R_i$.  At a larger granularity this data for each region may be available
-	  from Census. Otherwise, one can model it as $T_i = \mu N_i$, pick $\mu$
-	  from the census data.  The proportion of people who travel more than 5 km
-	  for work may be a good proxy for $\mu$ at LSGD level (need to discuss
-	  this).
+- $T_i$ is the total number of people who travel out for work from region
+  $R_i$.  At a larger granularity, this data for each region may be available
+  from Census.  Otherwise, one can model it as $T_i = \mu N_i$, where
+  -	$\mu = 0.1$ for grama panchayats and municipalities, and
+  -	$\mu = 0.05$ for corporations.
 
-	- $S_{i,j}$ is the total population in all the regions (except $R_i$ itself) 
-	  which are closer to $R_i$ than $R_j$. That is,
+- $S_{i,j}$ is the number of jobs in all the regions (except $R_i$ itself)
+  which are closer to $R_i$ than $R_j$. That is,
 
-	  $$
-	  S_{i,j} = \sum_{k=1}^{r} \{N_k :~ d(R_k, R_i) \leq d(R_j, R_i)\} - N_i - N_j.
-	  $$
+  $$
+  S_{i,j} = \sum_{k=1}^{r} \{J_k :~ d(R_k, R_i) \leq d(R_j, R_i)\} - J_i - J_j.
+  $$
 
-	  It turns out that $T_i = \sum T_{i,j}$. We will also set $T_{i,i} = N_i -
-	  T_i$, which can be interpretted as the number of people from region $R_i$
-	  travelling to $R_i$ itself. This will make the future summations easier
-	  to write.
+  We will also set $T_{i,i} = N_i - T_i$, which can be interpreted as the
+  number of people from region $R_i$ travelling to $R_i$ itself. This will make
+  the future summations easier to write.
 
-3.	**Workplace Contact Matrix.** 
+## LSGD size adjustment to Radiation model
+
+In the context of Kerala, the municipal corporations are much larger in area
+than muncipalities and grama panchayats. We assume that on a grosss average, a
+person living in a grama panchayath or municipality needs to travel 5 km to
+leave her grama panchayat or municipality, while a person living in a
+corporation needs to travel 10 km to leave her corporation. Based on the 2011
+census, data the proportion of population who travel more than 5 km to work
+is about $10%$ and more than 10 km to work is about $5%$. There is a small
+urban-rural difference between these numbers, but we ignore it since many grama
+panchayaths in kerala are also urban in nature. Hence we include the following
+tweak to the radiation model.
+
+-	$\mu = 0.1$ for panchayats and municpalities
+-	$\mu = 0.05$ for corporations	
+
+
+## Heterogenous Radiation Model (Only if the above tweak fails)
+
+There is a considerable difference in average incomes across rural and urban
+india (a factor of two). Hence one of the key assumptions for radiation model
+breaks down. Hence we breakdown the daily commuting to four types - rural-rural,
+rural-urban, urban-rural, urban-urban and calculate four travel matrices separately.
+
+1.	$T_i$ is the total number of people who travel out for work from region 
+	$R_i$. Census 2011 provides the distribution daily commute-distance[^cd]
+	"other workers" [^ow] per district. In kerala the percentage of people
+	with travel distance more than 1,2,5,10,20,50 kilometers are, respectively,
+
+
+[^cd]: Census 2011 defines *commute distance* as distance between place of
+  residence to place of work.
+
+[^ow]: Census 2011 defines *other workers* as follows. Workers other than
+  cultivators, agricultural labourers or workers in Household Industry, as
+  defined above are termed as ‘Other Workers’ (OW). Examples of such type of
+  workers are government servants, municipal employees, teachers, factory
+  workers, plantation workers, those engaged in trade, commerce, business,
+  transport, banking, mining, construction, political or social work, priests,
+  entertainment artists, etc.
+
+#	Travel Matrix to Contact Matric
+
+1.	**Workplace Contact Matrix.** 
 	This is an $r \times r$ matrix $C_w$ in which the entry $C_w[i,j]$ is 
 	the expected number of people from region $R_j$ that a susceptible person
 	from region $R_i$ will contact at workplace/school in a day. We model
@@ -185,7 +233,7 @@ Here
 	$N_k - T_k$, this sum will account for the people leaving and entering
 	$R_k$ for work.
 
-4.	**Contact Matrix.**
+2.	**Contact Matrix.**
 	The contact matrix $C$ is obtained by adding $c_h$ to each diagonal
 	entry of $C_w$. This is justified since all household contacts happen
 	in the region of a person's living.
@@ -266,7 +314,7 @@ makes this model most useful is that it is parameter-free and hence
 ### From assumptions to the formula.
 
 See the appendix of Simini et al.[^1] for a derivation using continuous
-probability distributions. Here we give an alternate proof using random
+probability distributions. Here we give an alternate derivation using random
 permutations. 
 
 Let $N_i$ and $N_j$, respectively, be the number of jobs in panchayats $R_i$
