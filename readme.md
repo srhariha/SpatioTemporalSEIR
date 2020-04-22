@@ -25,8 +25,9 @@ for experts in community health to corroborate their intuition against a mathema
 	deterministic [SEIR model](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SEIR_model)
 	fine-tuned for Covid-19.
 
-4. 	The mixing of population between panchayats is based on the [*radiation
-	law* for human mobility](https://en.wikipedia.org/wiki/Radiation_law_for_human_mobility) 
+4. 	The mixing of population between panchayats is based on the [*gravity
+	model* for human mobility](https://en.wikipedia.org/wiki/Gravity_model_of_migration)
+
 
 5. 	Spatio-temporal effect of various lockdown strategies can be tried out by
 	the user. Some examples of lockdown strategies include
@@ -127,11 +128,137 @@ Here
 -	$t_H \approx 9$
 
 
-# Spatial mixing (Radiation Model)
+# Spatial mixing 
 
 We say that a person *travels* from region $R_1$ to region $R_2$, if she lives
 in $R_1$ but works mostly in $R_2$. We will assume that there are $r$ regions
 in total.
+
+## Gravity model
+
+The number of people $T_{i,j}$ travelling for work from region $R_i$ to region
+$R_j$ in a day is modelled as
+
+$$
+T_{i,j} \propto \frac {N_i J_j}{d_{i,j}^2},
+$$
+where
+
+- $N_i$ is the population of region $R_i$.
+
+- $J_j$ is the number of non-agricultural job opportunities in $R_j$. It will
+  be great if one can find these numbers from a primary source. In the absence
+  of such a source, we model it as $J_j = \zeta N_j$, where 
+	- $\zeta = 0.1$ for grama panchayats,
+	- $\zeta = 0.2$ for municipalities and 
+	- $\zeta = 0.3$ for corporations
+
+  *Notes.* Only the relative magnitudes of the three zeta's matter. We consider
+  only non-agricultural jobs, since census data considers that agricultural
+  sector jobs has very little contribution to long-distance (more than 5 km)
+  daily commuting.
+
+- $d_{i,j}$ is the travel distance between regions $R_i$ and $R_j$.
+
+  The dependence on the distance is assumed to be $T_{i,j} \propto
+  1/d_{i,j}^2$.  This dependence is usually calibrated based on real data of
+  job movement in a region. In the absence of such data for Kerala, we are
+  making an arbitrary choice here based on a subjective validation of the
+  results.
+
+- We can estimate the proportionality constant using the relation
+  $$ T_i = \sum_{j \neq i} T_{i,j},$$
+  where $T_i$ is the total number of people who travel out for work from region
+  $R_i$.  Census 2011 contains a histogram of daily travel distances of
+  non-agricultural workers at district level resolution. Since the histogram is
+  coarse and there is no huge variation across districts, we estimate $T_i$ as
+  $T_i = \mu N_i$, where 
+  -	$\mu = 0.09$ for regions with area less than $25$ square kilometers
+  -	$\mu = 0.04$ for regions with area between $25$ and $100$ square kilometers
+  -	$\mu = 0.02$ for regions with area more than $100$ square kilometers
+
+  The values 9%, 4% and 2% used above are based, respectively, on the 2011
+  census estimate of the percentage of population travelling more than $5$, $10$
+  and $20$ kilometers for work (Kerala overall statistics).
+
+
+#	Travel Matrix to Contact Matrix
+
+1.	**Workplace Contact Matrix.** 
+	This is an $r \times r$ matrix $C_w$ in which the entry $C_w[i,j]$ is 
+	the expected number of people from region $R_j$ that a susceptible person
+	from region $R_i$ will contact at workplace/school in a day. We model
+	it as
+
+	$$
+	C_w[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
+	$$
+
+	If you consider a person picked uniformly at random from region $R_i$, the
+	term $\frac{T_{i,k}}{N_i}$ can be interpretted as the probability that she
+	goes for work in region $R_k$ and the term	$\frac{T_{j,k}}{\sum_{l=1}^{r}
+	T_{l,k}}$ can be interpretted as th probability that a person she contacts
+	at workplace (in region $R_k$) has come to work there from region $R_j$.
+	Notice that the total number of people in region $R_k$ during the day is
+	not $N_k$ but $\sum_{l=1}^{r} T_{l,k}$. Since we have chosen $T_{k,k}$ as
+	$N_k - T_k$, this sum will account for the people leaving and entering
+	$R_k$ for work.
+
+2.	**Contact Matrix.**
+	The contact matrix $C$ is obtained by adding $c_h$ to each diagonal
+	entry of $C_w$. This is justified since all household contacts happen
+	in the region of a person's living.
+
+# Spatio-Temporal Evolution
+
+$$
+\begin{aligned}
+\dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
+\dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
+\dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
+\dot H_i &=	 \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
+\dot R_i &=  \frac{H_i}{t_H}
+\end{aligned}
+$$
+
+The sum $\sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j}$ can be implemented
+as a matrix-vector multiplication if that will speed up the code.
+
+# Modelling Mitigation strategies
+
+1.	Every lockdown strategy is a control on the matrix $C_w$. Lockdown in a
+	region $R_i$ can be modelled by zeroing out the $i$-th row and column of
+	$C_w$ or by scaling it down by a fraction like $0.1$ to allow for the
+	essential services. A time dependent lockdown strategy will do this
+	tweaking with the $C_w$ matrix differently at different time-steps.
+
+2.	Break-the-chain campaigns like masks, hand sanitizers, social distancing
+	etc are a control on $\pi$.
+
+3. 	Effect of contact tracing and quarantining suspected contacts is difficult
+	to be modelled in our setup.
+
+4.	To model the effect of isolating symptomatic patients, we will need
+	to split the compartment $I$.
+
+# Justifying the model and parameter choices
+
+
+## Team
+
+- Arun Ramachandran
+- Birenjith P. S.
+- Deepak R.
+- Sajith V. K.
+- Sreeram H.
+
+### Acknowledgements
+
+- Dr. B. K. Bhavathrathan, Assistant. Professor, Civil Engineering, IIT Palakkad.
+
+\clearpage
+
+# Tried and ruled out 
 
 ## Radiation model
 
@@ -170,7 +297,7 @@ where
   number of people from region $R_i$ travelling to $R_i$ itself. This will make
   the future summations easier to write.
 
-## LSGD size adjustment to Radiation model
+### LSGD size adjustment to Radiation model
 
 In the context of Kerala, the municipal corporations are much larger in area
 than muncipalities and grama panchayats. We assume that on a grosss average, a
@@ -187,96 +314,7 @@ tweak to the radiation model.
 -	$\mu = 0.05$ for corporations	
 
 
-## Heterogenous Radiation Model (Only if the above tweak fails)
-
-There is a considerable difference in average incomes across rural and urban
-india (a factor of two). Hence one of the key assumptions for radiation model
-breaks down. Hence we breakdown the daily commuting to four types - rural-rural,
-rural-urban, urban-rural, urban-urban and calculate four travel matrices separately.
-
-1.	$T_i$ is the total number of people who travel out for work from region 
-	$R_i$. Census 2011 provides the distribution daily commute-distance[^cd]
-	"other workers" [^ow] per district. In kerala the percentage of people
-	with travel distance more than 1,2,5,10,20,50 kilometers are, respectively,
-
-
-[^cd]: Census 2011 defines *commute distance* as distance between place of
-  residence to place of work.
-
-[^ow]: Census 2011 defines *other workers* as follows. Workers other than
-  cultivators, agricultural labourers or workers in Household Industry, as
-  defined above are termed as ‘Other Workers’ (OW). Examples of such type of
-  workers are government servants, municipal employees, teachers, factory
-  workers, plantation workers, those engaged in trade, commerce, business,
-  transport, banking, mining, construction, political or social work, priests,
-  entertainment artists, etc.
-
-#	Travel Matrix to Contact Matric
-
-1.	**Workplace Contact Matrix.** 
-	This is an $r \times r$ matrix $C_w$ in which the entry $C_w[i,j]$ is 
-	the expected number of people from region $R_j$ that a susceptible person
-	from region $R_i$ will contact at workplace/school in a day. We model
-	it as
-
-	$$
-	C_w[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
-	$$
-
-	If you consider a person picked uniformly at random from region $R_i$, the
-	term $\frac{T_{i,k}}{N_i}$ can be interpretted as the probability that she
-	goes for work in region $R_k$ and the term	$\frac{T_{j,k}}{\sum_{l=1}^{r}
-	T_{l,k}}$ can be interpretted as th probability that a person she contacts
-	at workplace (in region $R_k$) has come to work there from region $R_j$.
-	Notice that the total number of people in region $R_k$ during the day is
-	not $N_k$ but $\sum_{l=1}^{r} T_{l,k}$. Since we have chosen $T_{k,k}$ as
-	$N_k - T_k$, this sum will account for the people leaving and entering
-	$R_k$ for work.
-
-2.	**Contact Matrix.**
-	The contact matrix $C$ is obtained by adding $c_h$ to each diagonal
-	entry of $C_w$. This is justified since all household contacts happen
-	in the region of a person's living.
-
-## Current parameter choices
-
--	$\mu \approx 0.01$ (will update after looking at census data)
-
-# Spatio-Temporal Evolution
-
-$$
-\begin{aligned}
-\dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
-\dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
-\dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot H_i &=	 \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
-\dot R_i &=  \frac{H_i}{t_H}
-\end{aligned}
-$$
-
-The sum $\sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j}$ can be implemented
-as a matrix-vector multiplication if that will speed up the code.
-
-# Modelling Mitigation strategies
-
-1.	Every lockdown strategy is a control on the matrix $C_w$. Lockdown in a
-	region $R_i$ can be modelled by zeroing out the $i$-th row and column of
-	$C_w$ or by scaling it down by a fraction like $0.1$ to allow for the
-	essential services. A time dependent lockdown strategy will do this
-	tweaking with the $C_w$ matrix differently at different time-steps.
-
-2.	Break-the-chain campaigns like masks, hand sanitizers, social distancing
-	etc are a control on $\pi$.
-
-3. 	Effect of contact tracing and quarantining suspected contacts is difficult
-	to be modelled in our setup.
-
-4.	To model the effect of isolating symptomatic patients, we will need
-	to split the compartment $I$.
-
-# Justifying the model and parameter choices
-
-## Radiation Model
+### Radiation Model (Assumptions)
 
 The *radiation model* was proposed by Simini et al.[^1] in 2012 as an
 alternative to the very popular gravity model. The model equation is derived
@@ -352,14 +390,29 @@ since $p_{i,j}$ is the product of the two probabilities mentioned above.
 Assumption 3 helps us to replace the number of jobs in the above formula with
 the number of people in each region.
 
-## Team
+### Heterogenous Radiation Model (Only if the above tweak fails)
 
-- Arun Ramachandran
-- Birenjith P. S.
-- Deepak R.
-- Sajith V. K.
-- Sreeram H.
+There is a considerable difference in average incomes across rural and urban
+india (a factor of two). Hence one of the key assumptions for radiation model
+breaks down. Hence we breakdown the daily commuting to four types - rural-rural,
+rural-urban, urban-rural, urban-urban and calculate four travel matrices separately.
 
+1.	$T_i$ is the total number of people who travel out for work from region 
+	$R_i$. Census 2011 provides the distribution daily commute-distance[^cd]
+	"other workers" [^ow] per district. In kerala the percentage of people
+	with travel distance more than 1,2,5,10,20,50 kilometers are, respectively,
+
+
+[^cd]: Census 2011 defines *commute distance* as distance between place of
+  residence to place of work.
+
+[^ow]: Census 2011 defines *other workers* as follows. Workers other than
+  cultivators, agricultural labourers or workers in Household Industry, as
+  defined above are termed as ‘Other Workers’ (OW). Examples of such type of
+  workers are government servants, municipal employees, teachers, factory
+  workers, plantation workers, those engaged in trade, commerce, business,
+  transport, banking, mining, construction, political or social work, priests,
+  entertainment artists, etc.
 
 
 [^1]: Simini, Filippo, Marta C. González, Amos Maritan, and Albert-László
