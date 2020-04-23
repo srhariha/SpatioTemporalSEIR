@@ -140,7 +140,7 @@ The number of people $T_{i,j}$ travelling for work from region $R_i$ to region
 $R_j$ in a day is modelled as
 
 $$
-T_{i,j} \propto \frac {N_i J_j}{d_{i,j}^2},
+T_{i,j} = T_i \frac {N_i J_j}{d_{i,j}^2},
 $$
 where
 
@@ -180,6 +180,32 @@ where
   The values 9%, 4% and 2% used above are based, respectively, on the 2011
   census estimate of the percentage of population travelling more than $5$, $10$
   and $20$ kilometers for work (Kerala overall statistics).
+
+- Putting it all together,
+  $$
+  T_{i,j} = T_i \frac{(J_j/d_{i,j}^2)}{\sum_{k \neq i}(J_k/d_{i,k}^2)},~ \forall j \neq i,
+  $$
+  and then compute $T_{i,i} = N_i - \sum_{j \neq i} T_{i,j}$. Theoretically
+  $T_{i,i}$ should be $N_i - T_i$, but I'm seeing rounding errors creeping in.
+
+*Optimisation notes.* 
+
+- It is better to compute the $T_i$ and $J_i$ arrays first rather than
+  computing it as $\mu N_i$ and $\zeta N_i$ inside the nested loops.  	
+
+- It might be fastest to compute $T_{i,j}$ values as a $r \times r$ matrix in
+  three stages.
+  1. Fill a matrix $A$ with $A[i,j] = J_j/d_{i,j}^2$ for $j \neq i$ and $0$ for
+	 $j = i$.
+  2. Divide each row of $A$ by the sum of that row so that finally each row
+	 sums to $1$.
+  3. Multiply each row of $A$ with $T_i$ to get the $T_{i,j}$ matrix (except
+	 the diagonal entries)
+  4. Set the diagonal entries $T_{i,i}$ as $N_i$ minus the sum of $i$-th
+     row of the $T_{i,j}$ matrix obtained in the previous step.
+  
+
+  
 
 
 #	Travel Matrix to Contact Matrix
