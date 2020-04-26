@@ -62,23 +62,39 @@ for experts in community health to corroborate their intuition against a mathema
 
 4.	A logging of crowd-sourced high quality strategies (again, not sure)
 
-# Time evolution (SEIHR Model) - Biren might update this
+# Time evolution (SEIR Model)
 
-![SEIHR model without mixing between regions](./SEIHR.png)
+A person gets infected by SARS-CoV-2 (Covid-19) virus when she comes in contact
+(either directly or via a shared surface) with an infectious person. A fraction
+of such people will start showing symptoms within $2$ to $14$ days (average
+$5.2$ days) and the symptoms will typically last for around $10$ days. This is
+called as the *health timeline* in the figure below. But what matters more for
+modelling is the *infectivity timeline*, which is the period during which an
+infected person is infectious or contagious. This period is estimated to start
+typically from about $1$ to $2$ days before the onset of symptoms and lasts
+typically for about $7$ days. This period is marked as $I$ (Infectious) in the
+infectivity timeline. The period before that, starting from the day of contact
+is marked as $E$ (Exposed or Latent). This is when the virus is multiplying in
+her body but is still not numerous enough to be infectious. The period after
+$I$ is marked as $R$ (Removed). This is when she is no longer infectious. She
+might still have symptoms at this stage and will typically take another $8$ or
+more days to be cured. Note that the word "typically" is intentionally overused
+in this paragraph. All these timelines vary from person to person depending on
+their health conditions and viral load transmitted at contact. The numbers
+reported are averages picked from most WHO reports.
 
-The SEIHR model considers the total population $N_i$ in a region $R_i$ as being
-split into five compartments based on their stage of infection. The number of
-people in these five compartments is a function of time but they always add to
-$N_i$. 
 
--	$S$ : Susceptible (before virus enters their body)
--	$E$ : Exposed (virus is multiplying inside their body but they are not
-		infectious/contagious yet)
--	$I$ : Infectious
--	$H$ : Not infectious but still hospitalised
--	$R$ : Removed (recovered + dead)
+![SARS-CoV-2 Timeline](./Timeline.png)
 
-The reason to add a separate category H to the standard SEIR model is to estimate the load on hospital beds. The number of hospital beds will be a function of I + H and not I alone.
+
+The SEIR model of disease spread is based on the infectivity timeline above.
+It considers the total population $N$ in a region as being split
+into four compartments based on their stage of infection. The number of people
+in each compartment change with time but they always add to $N$.
+
+
+![SEIR model without mixing between regions](./SEIR.png)
+
 
 ## Temporal evolution equations
 
@@ -87,8 +103,7 @@ $$
 \dot S_i	 &= -\beta S_i \frac{I_i}{N_i} \\
 \dot E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
 \dot I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot H_i	 &= \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
-\dot R_i	 &= \frac{H_i}{t_H}\\
+\dot R_i	 &= \frac{I_i}{t_I}\\
 \end{aligned}
 $$
 
@@ -110,8 +125,8 @@ Here
 	-	$\pi c \frac{I_i}{N_i}$ therefore, is the probability that that a
 		susceptible person catches the disease in a day.
 
--	$t_E$, $t_I$ and $t_R$ are the mean time that a person spends in the 
-	respective compartments, before moving onto the next.
+-	$t_E$ and  $t_I$ are the mean time that a person spends in the respective
+	compartments, before moving onto the next.
 
 -	The time variable is hidden in the above equations for readability.
 	$S_i$ should be read as $S_i(t)$ and $\dot S$ should be read as
@@ -123,9 +138,8 @@ Here
 	cleansing.
 -	$c_h \approx 5$
 -	$c_w$ is typically 15 on a normal day and 0 on a lockdown day.
--	$t_E \approx 5$
--	$t_I \approx 5$
--	$t_H \approx 9$
+-	$t_E \approx 3$
+-	$t_I \approx 7$
 
 
 # Spatial mixing 
@@ -242,8 +256,7 @@ $$
 \dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
 \dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
 \dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot H_i &=	 \frac{I_i}{t_I} - \frac{H_i}{t_H}\\
-\dot R_i &=  \frac{H_i}{t_H}
+\dot R_i &=	 \frac{I_i}{t_I}
 \end{aligned}
 $$
 
@@ -252,20 +265,69 @@ as a matrix-vector multiplication if that will speed up the code.
 
 # Modelling Mitigation strategies
 
-1.	Every lockdown strategy is a control on the matrix $C_w$. Lockdown in a
-	region $R_i$ can be modelled by zeroing out the $i$-th row and column of
-	$C_w$ or by scaling it down by a fraction like $0.1$ to allow for the
-	essential services. A time dependent lockdown strategy will do this
-	tweaking with the $C_w$ matrix differently at different time-steps.
+## Mitigation strategies to be included in v0.1
 
-2.	Break-the-chain campaigns like masks, hand sanitizers, social distancing
-	etc are a control on $\pi$.
+1.	Break the Chain + Mask 
+	- Only text message
+	- $\pi \rightarrow \epsilon_{BC} \times \pi$ from March 16, 2020
 
-3. 	Effect of contact tracing and quarantining suspected contacts is difficult
-	to be modelled in our setup.
+2.	Complete Lockdown 
+	- Date Range
+	- $c_w \rightarrow \epsilon_{LD} c_w$ during the lockdown date ranges
 
-4.	To model the effect of isolating symptomatic patients, we will need
-	to split the compartment $I$.
+3.	District Border Closure
+	- Date Range
+	- $C_w[i,j] \rightarrow \epsilon_{DB} C_w[i,j]$, if $R_i$ and $R_j$ 
+	  are regions from two different districts.
+
+4.	Predefined Hotspots
+	- Upload csv of current hotspots, with date range for each (name clash?)
+	- To simulate lockdown of one region $R_i$, set 
+		- $C_w[i,j] \rightarrow \epsilon_{HS} C_w[i,j]$, for all $j$, and
+		- $C_w[j,i] \rightarrow \epsilon_{HS} C_w[j,i]$, for all $j \neq i$
+
+	  during the selected date range.
+	- Repeat this for every region in the list of hotspots.
+	- Notice that if both $R_i$ and $R_j$ are under lockdown, $C_w[i,j]$ will
+	  get scaled by $\epsilon_{HS}^2$, which agrees with the transportation
+	  model.
+
+5.	Dynamic Hotspots
+	- Any LSGD with an active case is declared as a hotspot for the next $7$
+	  days or till the number of active cases goes below $0.5$, whichever
+	  is later. 
+	- A lockdown is simulated as in the previous case.
+
+6.	Red Zone
+	- 14 checkboxes | Visual select from map
+	- Date Range
+	- For every region $R_i$ in the red zone, set 
+		- $C_w[i,j] \rightarrow \epsilon_{RZ} C_w[i,j]$, for all $j$, and
+		- $C_w[j,i] \rightarrow \epsilon_{RZ} C_w[j,i]$, for all $j \neq i$
+
+	  during the selected date range.
+
+7.	Orange Zone
+	- 14 checkboxes | Visual select from map
+	- Date Range
+	- Simlulation is same as red zone but with $\epsilon_{OZ}$ instead of
+	  $\epsilon_{RZ}$.
+
+where, 
+
+- $\epsilon_{BC} = 2/3$,
+- $\epsilon_{DB} = 1/5$,
+- $\epsilon_{OZ} = 1/5$,
+- $\epsilon_{RZ} = 1/10$,
+- $\epsilon_{LD} = 1/10$,
+- $\epsilon_{HS} = 1/50$
+
+## Scenarios
+
+1.	Initialise with today's reality
+
+2.	Initialise with a past reality and validate against today's reality.
+	- Is it agreeing at state/district level?
 
 # Justifying the model and parameter choices
 
