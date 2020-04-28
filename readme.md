@@ -80,8 +80,9 @@ $I$ is marked as $R$ (Removed). This is when she is no longer infectious. She
 might still have symptoms at this stage and will typically take another $8$ or
 more days to be cured. Note that the word "typically" is intentionally overused
 in this paragraph. All these timelines vary from person to person depending on
-their health conditions and viral load transmitted at contact. The numbers
-reported are averages picked from most WHO reports.
+their health conditions and viral load transmitted at contact. The above numbers
+are picked from the [MIDAS Online Portal for COVID-19 Modeling Research](
+https://midasnetwork.us/covid-19/).
 
 
 ![SARS-CoV-2 Timeline](./Timeline.png)
@@ -104,13 +105,14 @@ $$
 \dot E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
 \dot I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
 \dot R_i	 &= \frac{I_i}{t_I}\\
+\dot A_i	 &= \alpha \frac{I_i}{t_P} - \frac{A_i}{t_A}\\
 \end{aligned}
 $$
 
 Here 
 
--	$\beta = \pi c$, where
-	-	$\pi$ is the probability that a susceptible person who contacts an
+-	$\beta = p c$, where
+	-	$p$ is the probability that a susceptible person who contacts an
 		infectious person catches the disease (not all contacts transmit the
 		disease)
 
@@ -122,7 +124,7 @@ Here
 	-	$c \frac{I_i}{N_i}$ therefore, is the expected number of infectious
 		people that a susceptible person contacts in a day.
 
-	-	$\pi c \frac{I_i}{N_i}$ therefore, is the probability that that a
+	-	$p c \frac{I_i}{N_i}$ therefore, is the probability that that a
 		susceptible person catches the disease in a day.
 
 -	$t_E$ and  $t_I$ are the mean time that a person spends in the respective
@@ -132,77 +134,94 @@ Here
 	$S_i$ should be read as $S_i(t)$ and $\dot S$ should be read as
 	$S(t+1) - S(t)$, and so on.
 
-## Current parameter choices
+### Current parameter choices
 
--	$\pi \approx 0.02$, this can reduce with the use of masks and regular
+-	$p \approx 0.02$, this can reduce with the use of masks and regular
 	cleansing.
 -	$c_h \approx 5$
--	$c_w$ is typically 15 on a normal day and 0 on a lockdown day.
+-	$c_w$ is typically 15 on a normal day
 -	$t_E \approx 3$
 -	$t_I \approx 7$
+-	$t_P \approx 2$
+-	$t_A \approx 13$
 
 
 # Spatial mixing 
 
-We say that a person *travels* from region $R_1$ to region $R_2$, if she lives
-in $R_1$ but works mostly in $R_2$. We will assume that there are $r$ regions
-in total.
+We say that a person *travels* from region $R_i$ to region $R_j$, if she lives
+in $R_i$ but goes daily to $R_j$ for work. We will assume that there are $r$
+regions in total. Let us denote by $T_{i,j}$, the number of people travelling
+for work from region $R_i$ to region $R_j$ in a day. How fast an epidemic
+spreads over various regions depends mainly on these numbers. Unfortunately, we
+do not have actual estimates for these numbers. Hence we use a commonly used
+mathematical model called the *gravity model* to artificially estimate  these
+numbers.
 
-## Gravity model
+## Travel matrix $T$ from Gravity model
 
-The number of people $T_{i,j}$ travelling for work from region $R_i$ to region
-$R_j$ in a day is modelled as
+The gravity model needs three inputs, some of which we indirectly modelled
+using the population statistics. We denote the population of region $R_i$ with
+$N_i$.
 
-$$
-T_{i,j} = T_i \frac {N_i J_j}{d_{i,j}^2},
-$$
-where
+1.	$T_i$, the number of people who travel out from region $R_i$ every day. We
+	need this for for every LSGD in the state. In the absence of direct
+	estimates, we assume $T_i$ indirectly from the 2011 census data as follows.
 
-- $N_i$ is the population of region $R_i$.
+	Census 2011 contains a histogram of daily travel distances of
+	non-agricultural workers at district level resolution. Since the histogram
+	is coarse and there is no huge variation across districts, we estimate
+	$T_i$ as $T_i = \mu N_i$, where 
+  	-	$\mu = 0.09$ for regions with area less than $25$ square kilometers
+	-	$\mu = 0.04$ for regions with area between $25$ and $100$ square
+		kilometers
+	-	$\mu = 0.02$ for regions with area more than $100$ square kilometers
 
-- $J_j$ is the number of non-agricultural job opportunities in $R_j$. It will
-  be great if one can find these numbers from a primary source. In the absence
-  of such a source, we model it as $J_j = \zeta N_j$, where 
+	The values 9%, 4% and 2% used above are based, respectively, on the 2011
+	census estimate of the percentage of population travelling more than $5$,
+	$10$ and $20$ kilometers for work (Kerala overall statistics).
+
+
+2. 	$J_j$ is the number of non-agricultural job opportunities in $R_j$. We need
+	this too for every LSGD. It will be great if one can find these numbers
+	from a primary source. In the absence of such a source, we model it as $J_j
+	= \zeta N_j$, where 
 	- $\zeta = 0.1$ for grama panchayats,
 	- $\zeta = 0.2$ for municipalities and 
 	- $\zeta = 0.3$ for corporations
 
-  *Notes.* Only the relative magnitudes of the three zeta's matter. We consider
-  only non-agricultural jobs, since census data considers that agricultural
-  sector jobs has very little contribution to long-distance (more than 5 km)
-  daily commuting.
+	*Notes.* Only the relative magnitudes of the three zeta's matter. We
+	consider only non-agricultural jobs, since census data considers that
+	agricultural sector jobs has very little contribution to long-distance
+	(more than 5 km) daily commuting.
 
-- $d_{i,j}$ is the travel distance between regions $R_i$ and $R_j$.
+3.	$d_{i,j}$ is the travel distance between regions $R_i$ and $R_j$. We need
+	this for every pair of LSGDs.
 
-  The dependence on the distance is assumed to be $T_{i,j} \propto
-  1/d_{i,j}^2$.  This dependence is usually calibrated based on real data of
-  job movement in a region. In the absence of such data for Kerala, we are
-  making an arbitrary choice here based on a subjective validation of the
-  results.
+Using these three inputs, we model the number of people $T_{i,j}$ travelling
+for work from region $R_i$ to region $R_j$ in a day is as
 
-- We can estimate the proportionality constant using the relation
-  $$ T_i = \sum_{j \neq i} T_{i,j},$$
-  where $T_i$ is the total number of people who travel out for work from region
-  $R_i$.  Census 2011 contains a histogram of daily travel distances of
-  non-agricultural workers at district level resolution. Since the histogram is
-  coarse and there is no huge variation across districts, we estimate $T_i$ as
-  $T_i = \mu N_i$, where 
-  -	$\mu = 0.09$ for regions with area less than $25$ square kilometers
-  -	$\mu = 0.04$ for regions with area between $25$ and $100$ square kilometers
-  -	$\mu = 0.02$ for regions with area more than $100$ square kilometers
+$$
+T_{i,j} = \alpha_i \frac {T_i J_j}{d_{i,j}^2}.
+$$
+where the normalisation factor 
+$$
+\alpha_i = \left(\sum_{k \neq i}(J_k/d_{i,k}^2)\right)^{-1}.
+$$
 
-  The values 9%, 4% and 2% used above are based, respectively, on the 2011
-  census estimate of the percentage of population travelling more than $5$, $10$
-  and $20$ kilometers for work (Kerala overall statistics).
+We assume the dependence on the distance to be $T_{i,j} \propto 1/d_{i,j}^2$.
+This dependence is usually calibrated based on real data of job movement in a
+region. In the absence of such data for Kerala, we are making an arbitrary
+choice here based on a subjective validation of the results.
 
-- Putting it all together,
-  $$
-  T_{i,j} = T_i \frac{(J_j/d_{i,j}^2)}{\sum_{k \neq i}(J_k/d_{i,k}^2)},~ \forall j \neq i,
-  $$
-  and then compute $T_{i,i} = N_i - \sum_{j \neq i} T_{i,j}$. Theoretically
-  $T_{i,i}$ should be $N_i - T_i$, but I'm seeing rounding errors creeping in.
+Putting it all together in one formula, we get
 
-*Optimisation notes.* 
+$$
+T_{i,j} = T_i \frac{(J_j/d_{i,j}^2)}{\sum_{k \neq i}(J_k/d_{i,k}^2)},~ \forall j \neq i,
+$$
+and then compute $T_{i,i} = N_i - \sum_{k \neq i} T_{i,k}$. Theoretically
+$T_{i,i}$ should be $N_i - T_i$, but it may have rounding errors.
+
+*Speedup notes.* 
 
 - It is better to compute the $T_i$ and $J_i$ arrays first rather than
   computing it as $\mu N_i$ and $\zeta N_i$ inside the nested loops.  	
@@ -218,36 +237,147 @@ where
   4. Set the diagonal entries $T_{i,i}$ as $N_i$ minus the sum of $i$-th
      row of the $T_{i,j}$ matrix obtained in the previous step.
   
+##	Normal Workplace Contact matrix $W_N$
 
-  
+The *Normal Workplace Contact Matrix* $W_N$ is an $r \times r$ matrix in which
+the entry $W_N[i,j]$ is the expected number of people from region $R_j$ that a
+susceptible person from region $R_i$ will contact at workplace/school during a
+*normal day*. We will scale this matrix appropriately for non-normal days, that
+is days in which any mitigation strategy is active. We model $W_N$ as a
+function of the population statistics and the travel matrix.
+
+$$
+W_N[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}},
+$$
+where
+
+-	$c_w$ is the expected number of people that a susceptible person contacts
+	at work/school on a normal day,
+
+-	$N_i$ is the population of region $R_i$, and
+
+-	$T_{i,j}$ is the expected number of people travelling for work from region
+	$R_i$ to region $R_j$ on a normal day.
 
 
-#	Travel Matrix to Contact Matrix
+*Justification.* If we consider a person picked uniformly at random from region
+$R_i$, the term $T_{i,k} / N_i$ can be interpreted as the probability that she
+goes for work in region $R_k$ and the term $T_{j,k} / \sum_{l=1}^{r} T_{l,k}$
+can be interpreted as the probability that a person she contacts at workplace
+(while at work in region $R_k$) has come to work there from region $R_j$.
+Notice that the total number of people in region $R_k$ during the day is not
+$N_k$ but $\sum_{l=1}^{r} T_{l,k}$. Since we have chosen $T_{k,k}$ as $N_k -
+T_k$, this sum will automatically account for the people who live and work in
+$R_k$.
 
-1.	**Workplace Contact Matrix.** 
-	This is an $r \times r$ matrix $C_w$ in which the entry $C_w[i,j]$ is 
-	the expected number of people from region $R_j$ that a susceptible person
-	from region $R_i$ will contact at workplace/school in a day. We model
-	it as
+## Mitigated Workplace Contact Matrix $W_M$
 
-	$$
-	C_w[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}}
-	$$
+The *mitigated workplace contact matrix* $W_M$ is a function of the normal
+workplace contact matrix $W_N$ and the various mitigation strategies like
+break-the-chain, lockdowns, hotspots etc that are active in the state on a day.
+The entry $W_M[i,j]$ will represent the expected number of people from region
+$R_j$ that a susceptible person from region $R_i$ will contact at
+workplace/school during a day when all the active mitigation strategies are in
+place.
 
-	If you consider a person picked uniformly at random from region $R_i$, the
-	term $\frac{T_{i,k}}{N_i}$ can be interpretted as the probability that she
-	goes for work in region $R_k$ and the term	$\frac{T_{j,k}}{\sum_{l=1}^{r}
-	T_{l,k}}$ can be interpretted as th probability that a person she contacts
-	at workplace (in region $R_k$) has come to work there from region $R_j$.
-	Notice that the total number of people in region $R_k$ during the day is
-	not $N_k$ but $\sum_{l=1}^{r} T_{l,k}$. Since we have chosen $T_{k,k}$ as
-	$N_k - T_k$, this sum will account for the people leaving and entering
-	$R_k$ for work.
+This matrix will have to be recomputed whenever there is a change in mitigation
+strategies. The reduction in workplace contact rate due to each mitigation
+strategy is captured by an $r \times r$  mitigation matrices $M$ as follows.
 
-2.	**Contact Matrix.**
-	The contact matrix $C$ is obtained by adding $c_h$ to each diagonal
-	entry of $C_w$. This is justified since all household contacts happen
-	in the region of a person's living.
+0.	Normal day
+	- The mitigation matrix $M_N$ is all $1$
+	- *Inputs* : None
+
+1.	Break the Chain
+	- The mitigation matrix $M_{BC}$ is all $\epsilon_{BC}$ .
+	- *Inputs* : Date ranges
+
+2.	Complete Lockdown 
+	- The mitigation matrix $M_{LD}$ is all $\epsilon_{LD}$ .
+
+3.	District Border Closure
+	- $M_{DB}[i,j] = 1$ if $R_i$ and $R_j$ are in the same district
+	- $M_{DB}[i,j] = \epsilon_{DB}$ if $R_i$ and $R_j$ are in different districts
+	- In a seven-region toy example with regions 1 and 2 in the first district,
+	  regions 3, 4 and 5 in the second district and regions 6 and 7 in the
+	  third, the $M_{DB}$ matrix will look like
+	  $$
+	  \begin{bmatrix}
+	  1 & 1 & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB}  & \epsilon_{DB} & \epsilon_{DB} \\
+	  1 & 1 & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB}  & \epsilon_{DB} & \epsilon_{DB} \\
+	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
+	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
+	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
+	  \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & 1 & 1 \\
+	  \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & 1 & 1 
+	  \end{bmatrix}
+	  $$
+	- *Inputs* : Date ranges
+
+4.	Hotspots
+	- $M_{HS}[i,j] = \epsilon_{HS}$ if either $R_i$ or $R_j$ is a hotspot.
+	  Otherwise it is $1$.
+	- In the seven-region toy example with regions 2,3 and 7 declared as
+	  hotspots, $M_{HS}$ matrix will look like
+	  $$
+	  \begin{bmatrix}
+	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
+	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} \\
+	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} \\
+	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
+	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
+	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
+	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} 
+	  \end{bmatrix}
+	  $$
+	- *Inputs* : Date ranges and list of hotspots
+
+5.	 Red and Orange Zones
+	- $M_{RZ}[i,j] = \epsilon_{RZ}$ if either $R_i$ or $R_j$ is in a red zone
+	  district.  Otherwise it is $1$.
+	- In the seven-region toy example with distict-2 (regions 3,4 and 5)
+	  declared as red zone, $M_{RZ}$ matrix will look like
+	  $$
+	  \begin{bmatrix}
+	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
+	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
+	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
+	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
+	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
+	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
+	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1
+	  \end{bmatrix}
+	  $$
+	- *Inputs* : Date ranges and list of LSGDs under red zone \
+	- Orange zone is similar to red zone, but with a different $\epsilon$
+
+The effective mitigation matrix $M$ for a day is obtained by taking a
+**pointwise minimum** of all the mitigations active during that day. The
+mitigated workplace contact matrix is obtained by **pointwise multiplying** $M$
+and $W_N$.
+
+### Current parameter choices
+
+- $\epsilon_{BC} = 2/3$,
+- $\epsilon_{DB} = 1/5$,
+- $\epsilon_{OZ} = 1/5$,
+- $\epsilon_{RZ} = 1/10$,
+- $\epsilon_{LD} = 1/10$,
+- $\epsilon_{HS} = 1/50$
+
+## Effective Contact Matrix $C$
+
+The *Effective Contact Matrix* $C$ is obtained from the mitigated workplace
+contact matrix $W_M$ by adding expected number of daily household contacts
+$c_h$ to each diagonal entry of $W_M$. This is justified since all household
+contacts happen in the region of a person's living.
+
+$$
+\begin{aligned}
+C[i,j] &= W_M[i,j], i \neq j, \\
+C[i,i] &= W_M[i,i] + c_h.
+\end{aligned}
+$$
 
 # Spatio-Temporal Evolution
 
@@ -262,65 +392,6 @@ $$
 
 The sum $\sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j}$ can be implemented
 as a matrix-vector multiplication if that will speed up the code.
-
-# Modelling Mitigation strategies
-
-## Mitigation strategies to be included in v0.1
-
-1.	Break the Chain + Mask 
-	- Only text message
-	- $\pi \rightarrow \epsilon_{BC} \times \pi$ from March 16, 2020
-
-2.	Complete Lockdown 
-	- Date Range
-	- $c_w \rightarrow \epsilon_{LD} c_w$ during the lockdown date ranges
-
-3.	District Border Closure
-	- Date Range
-	- $C_w[i,j] \rightarrow \epsilon_{DB} C_w[i,j]$, if $R_i$ and $R_j$ 
-	  are regions from two different districts.
-
-4.	Predefined Hotspots
-	- Upload csv of current hotspots, with date range for each (name clash?)
-	- To simulate lockdown of one region $R_i$, set 
-		- $C_w[i,j] \rightarrow \epsilon_{HS} C_w[i,j]$, for all $j$, and
-		- $C_w[j,i] \rightarrow \epsilon_{HS} C_w[j,i]$, for all $j \neq i$
-
-	  during the selected date range.
-	- Repeat this for every region in the list of hotspots.
-	- Notice that if both $R_i$ and $R_j$ are under lockdown, $C_w[i,j]$ will
-	  get scaled by $\epsilon_{HS}^2$, which agrees with the transportation
-	  model.
-
-5.	Dynamic Hotspots
-	- Any LSGD with an active case is declared as a hotspot for the next $7$
-	  days or till the number of active cases goes below $0.5$, whichever
-	  is later. 
-	- A lockdown is simulated as in the previous case.
-
-6.	Red Zone
-	- 14 checkboxes | Visual select from map
-	- Date Range
-	- For every region $R_i$ in the red zone, set 
-		- $C_w[i,j] \rightarrow \epsilon_{RZ} C_w[i,j]$, for all $j$, and
-		- $C_w[j,i] \rightarrow \epsilon_{RZ} C_w[j,i]$, for all $j \neq i$
-
-	  during the selected date range.
-
-7.	Orange Zone
-	- 14 checkboxes | Visual select from map
-	- Date Range
-	- Simlulation is same as red zone but with $\epsilon_{OZ}$ instead of
-	  $\epsilon_{RZ}$.
-
-where, 
-
-- $\epsilon_{BC} = 2/3$,
-- $\epsilon_{DB} = 1/5$,
-- $\epsilon_{OZ} = 1/5$,
-- $\epsilon_{RZ} = 1/10$,
-- $\epsilon_{LD} = 1/10$,
-- $\epsilon_{HS} = 1/50$
 
 ## Scenarios
 
@@ -342,7 +413,12 @@ where,
 
 ### Acknowledgements
 
-- Dr. B. K. Bhavathrathan, Assistant. Professor, Civil Engineering, IIT Palakkad.
+- Dr. B. K. Bhavathrathan, 
+  Assistant. Professor, Civil Engineering, IIT Palakkad.
+- Dr. Sahely Bhadra, 
+  Assistant. Professor, Computer Science \& Engineering, IIT Palakkad.
+- Dr. Mrinal Kanti Das
+  Assistant. Professor, Computer Science \& Engineering, IIT Palakkad.
 
 \clearpage
 

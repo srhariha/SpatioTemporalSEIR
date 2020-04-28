@@ -1,7 +1,10 @@
 *.log
 *.dvi
 *.pdf
+*.orig
 .ipynb_checkpoints/*
 src/.ipynb_checkpoints/*
 output/.ipynb_checkpoints/*
+tmp/
+gis/
 .~*
