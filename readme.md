@@ -101,11 +101,11 @@ in each compartment change with time but they always add to $N$.
 
 $$
 \begin{aligned}
-\dot S_i	 &= -\beta S_i \frac{I_i}{N_i} \\
-\dot E_i	 &= \beta S_i \frac{I_i}{N_i} - \frac{E_i}{t_E}\\
-\dot I_i	 &= \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot R_i	 &= \frac{I_i}{t_I}\\
-\dot A_i	 &= \alpha \frac{I_i}{t_P} - \frac{A_i}{t_A}\\
+\dot S	 &= -\beta S \frac{I}{N} \\
+\dot E	 &= \beta S \frac{I}{N} - \frac{E}{t_E}\\
+\dot I	 &= \frac{E}{t_E} - \frac{I}{t_I}\\
+\dot R	 &= \frac{I}{t_I}\\
+\dot A	 &= \alpha \frac{I}{t_P} - \frac{A}{t_A}\\
 \end{aligned}
 $$
 
@@ -121,17 +121,17 @@ Here
 		where $c_h$ and $c_w$ are the expected number of people that a
 		susceptible person contacts at home and work/school respectively.
 
-	-	$c \frac{I_i}{N_i}$ therefore, is the expected number of infectious
+	-	$c \frac{I}{N}$ therefore, is the expected number of infectious
 		people that a susceptible person contacts in a day.
 
-	-	$p c \frac{I_i}{N_i}$ therefore, is the probability that that a
+	-	$p c \frac{I}{N}$ therefore, is the probability that that a
 		susceptible person catches the disease in a day.
 
 -	$t_E$ and  $t_I$ are the mean time that a person spends in the respective
 	compartments, before moving onto the next.
 
 -	The time variable is hidden in the above equations for readability.
-	$S_i$ should be read as $S_i(t)$ and $\dot S$ should be read as
+	$S$ should be read as $S(t)$ and $\dot S$ should be read as
 	$S(t+1) - S(t)$, and so on.
 
 ### Current parameter choices
