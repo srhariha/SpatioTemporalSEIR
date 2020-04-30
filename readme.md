@@ -431,6 +431,7 @@ In the initial phase of the epidemic we can assume that $S \approx N$. This
 will simplify the temporal evolution of the remaining six compartments to
 a set of six linear ordinary differential equations which can be expressed
 in matrix form as 
+
 $$
 \begin{bmatrix}
 \dot E \\ \dot I \\ \dot R \\ \dot P \\ \dot A \\ \dot C
