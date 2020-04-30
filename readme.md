@@ -94,20 +94,26 @@ into four compartments based on their stage of infection. The number of people
 in each compartment change with time but they always add to $N$.
 
 
-![SEIR model without mixing between regions](./SEIR.png)
+![SEIR model without mixing between regions](./SEIRPAC.png)
 
 
 ## Temporal evolution equations
 
+The daily increment to each compartment is given by the following equations.
 $$
 \begin{aligned}
 \dot S	 &= -\beta S \frac{I}{N} \\
 \dot E	 &= \beta S \frac{I}{N} - \frac{E}{t_E}\\
 \dot I	 &= \frac{E}{t_E} - \frac{I}{t_I}\\
 \dot R	 &= \frac{I}{t_I}\\
-\dot A	 &= \alpha \frac{I}{t_P} - \frac{A}{t_A}\\
+\dot P	 &= \frac{E}{t_E} - \frac{P}{t_P}\\
+\dot A	 &= \frac{P}{t_P} - \frac{A}{t_A}\\
+\dot C	 &= \frac{A}{t_A}\\
 \end{aligned}
 $$
+
+Finally, the number of active reported cases will be modelled as $A_R = \alpha
+A$.
 
 Here 
 
@@ -127,8 +133,11 @@ Here
 	-	$p c \frac{I}{N}$ therefore, is the probability that that a
 		susceptible person catches the disease in a day.
 
--	$t_E$ and  $t_I$ are the mean time that a person spends in the respective
-	compartments, before moving onto the next.
+-	$t_E$, $t_I$, $t_P$ and  $t_A$ are the mean time that a person spends in
+	the respective compartments, before moving onto the next.
+
+-	$\alpha$ is ascertainment rate, that is the fraction of infected people who
+	test positive.
 
 -	The time variable is hidden in the above equations for readability.
 	$S$ should be read as $S(t)$ and $\dot S$ should be read as
@@ -144,6 +153,7 @@ Here
 -	$t_I \approx 7$
 -	$t_P \approx 2$
 -	$t_A \approx 13$
+-	$\alpha \approx 1/100$
 
 
 # Spatial mixing 
@@ -386,12 +396,147 @@ $$
 \dot S_i &= -\pi S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
 \dot E_i &=  \pi S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
 \dot I_i &=	 \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
-\dot R_i &=	 \frac{I_i}{t_I}
+\dot R_i &=	 \frac{I_i}{t_I}\\
+\dot P_i &=	 \frac{E_i}{t_E} - \frac{P_i}{t_P}\\
+\dot A_i &=	 \frac{P_i}{t_P} - \frac{A_i}{t_A} \\
+\dot C_i &=	 \frac{A_i}{t_A}
 \end{aligned}
 $$
 
+Finally the number of reported active cases in each region is modelled as
+$AR_i = \alpha A_i$.
+
 The sum $\sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j}$ can be implemented
 as a matrix-vector multiplication if that will speed up the code.
+
+# Initialisation
+
+The initialisation input to the simulator is the number of reported active
+cases $AR_i$ in each region $R_i$. To begin with we set $A_i = AR_i / \alpha$
+since we assume that only $\alpha$ fraction of the active cases get reported.
+So we have data to populate one compartment ($A_i$) of the SEIRPAC model for
+the region.  But there is no reason to assume that the compartments other than
+$A$ and $S$ are empty. Furthermore, since the disease has a significant
+incubation period and a low ascertainment rate,  there is no reason to assume
+that regions with no active reported case are totally devoid of any infected or
+exposed people.  Hence we are forced to resort to some more fancy Mathematics
+to initialise all the hidden compartments of our model.
+
+Firstly let us focus on a single region in which there is at least one reported
+active case. Here we know the size of $A$.  We estimate the size of the
+remaining compartments for the same region  using an eigen vector analysis of a
+linear approximation to the SEIR differential equations.
+
+In the initial phase of the epidemic we can assume that $S \approx N$. This
+will simplify the temporal evolution of the remaining six compartments to
+a set of six linear ordinary differential equations which can be expressed
+in matrix form as 
+$$
+\begin{bmatrix}
+\dot E \\ \dot I \\ \dot R \\ \dot P \\ \dot A \\ \dot C
+\end{bmatrix}
+= 
+\begin{bmatrix}
+-r_E & \beta & 0 &  0 & 0 & 0 \\
+r_E & -r_I & 0 & 0 & 0 & 0 \\
+0 & r_I & 0 & 0 & 0 & 0 \\
+r_E & 0 & 0 & -r_P & 0 & 0 \\
+0 & 0 & 0 & r_P & -r_A & 0 \\
+0 & 0 & 0 & 0 & r_A & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+E \\ I \\ R \\ P \\ A \\ C
+\end{bmatrix}
+$$
+
+Let us denote the matrix in the above equation by $J$.  Let $\lambda$ be the
+largest eigen value of $J$ and $v = (v_0, \ldots, v_5)$ be the corresponding
+eigen vector. No matter what is the initial condition (except all zeros), the
+above time evolution, after a few initial iterations, will maintain a fixed
+ratio between the sizes of the six compartments. This ratio is given by eigen
+vector $v$ That is,
+
+$$
+\frac{E}{v_0} = 
+\frac{I}{v_1} = 
+\frac{R}{v_2} = 
+\frac{P}{v_3} = 
+\frac{A}{v_4} = 
+\frac{C}{v_5}.
+$$
+
+Let us say the system attains this property at time $t_0$. Usually this time
+$t_0$ is within the first few weeks of the first set of infected people
+arriving in an otherwise infection-free region. This property remains true as
+long as $S$ is very close to $N$. We will call this time period as the *stable
+initial phase* of the epidemic. So if we assume that the epidemic is in its
+stable initial phase, and we are given that the number of active cases today is
+$A$, then we will set initialise each compartment of the model using the
+equations
+
+$$
+\begin{aligned}
+(E, I, R, P, A, C) &= \left(
+\frac{v_0}{v_4}, 
+\frac{v_1}{v_4}, 
+\frac{v_2}{v_4}, 
+\frac{v_3}{v_4}, 
+\frac{v_4}{v_4}, 
+\frac{v_5}{v_4}
+\right) A, \\
+S &= N - (E + I + R)
+\end{aligned}
+$$
+
+This solves the first problem. Now we have to solve the second problem of
+estimating the exposed and infectious people in the regions with reported
+active cases. Our strategy for this is two fold. First, we would like to run
+the simulator backwards from some $b$ days, independently in each of the
+affected region and estimate the situation in those regions on that day. Then
+we run the simulator forward for $b$ days with all the spatial mixing enabled.
+The result will be used as today's seed. The main challenge with this approach
+is that the simulator cannot be run backwards in time.  But the simplified
+linear ODEs which approximate the SEIRPAC model well in the initial phase can
+be run backwards.
+
+In the stable initial phase, the epidemic growth can be well approximated by
+$$X(t) = X(t_0) e^{\lambda (t-t_0)},$$ where $X$ is any of the six compartments
+$E$ to $C$ and $\lambda$ is the largest eigen value of $J$. Hence if we
+know the size of a compartment $X$ today, it's size $b$ days ago can be
+estimated as $X e^{-\lambda b}$. For the forward, phase we directly run
+our simulator for $b$ days.
+
+Putting it all together, these are the computations to be done to initialize
+the model when we are given $AR_i$ value for each region $R_i$.
+
+1. 	For each region $A_i  = AR_i / \alpha$.
+
+2. 	Compute the largest eigen value $\lambda$ and the corresponding eigen
+	vector $v = (v_0, \ldots, v_5)$ of matrix $J$. We can assume that 
+	$\beta$ for region $i$ is $p*c_r$(this may change later) 
+
+3.	For each region $i$ set
+	$$
+	\begin{aligned}
+	(E_i, I_i, R_i, P_i, A_i, C_i) &= \left(
+	\frac{v_0}{v_4}, 
+	\frac{v_1}{v_4}, 
+	\frac{v_2}{v_4}, 
+	\frac{v_3}{v_4}, 
+	\frac{v_4}{v_4}, 
+	\frac{v_5}{v_4}
+	\right) A_i e^{-\lambda b}, \\
+	S_i &= N_i - (E_i + I_i + R_i)
+	\end{aligned}
+	$$
+
+4.	Run the full simulator for $b$ days, starting with these initial
+	conditions.
+
+### Current parameter choices
+
+- $c_r = 10$
+- $b = 21$ days
 
 ## Scenarios
 
@@ -400,7 +545,6 @@ as a matrix-vector multiplication if that will speed up the code.
 2.	Initialise with a past reality and validate against today's reality.
 	- Is it agreeing at state/district level?
 
-# Justifying the model and parameter choices
 
 
 ## Team
