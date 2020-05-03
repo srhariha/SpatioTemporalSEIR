@@ -1,4 +1,4 @@
-﻿name,type,N
+name,type,N
 Adat__Thrissur,P,31973
 Adichanalloor__Kollam,P,33638
 Adimali__Idukki,P,40484
@@ -106,7 +106,7 @@ Changaroth__Kozhikode,P,32107
 Chapparapadavu__Kannur,P,31622
 Chathamangalam__Kozhikode,P,46688
 Chathanoor__Kollam,P,28585
-Chavakkad(M)__Thrissur,M,3998
+Chavakkad(M)__Thrissur,M,39098
 Chavara__Kollam,P,42655
 Chazhoor__Thrissur,P,29141
 Cheekkod__Malappuram,P,6297
@@ -231,8 +231,8 @@ Ezhome__Kannur,P,19261
 Ezhukone__Kollam,P,24251
 Ezhumattoor__Pathanamthitta,P,18799
 Ezhupunna__Alappuzha,P,21506
-Feroke(M)__Kozhikode,M,5474
-Guruvayur(M)__Thrissur,M,7012
+Feroke(M)__Kozhikode,M,54074
+Guruvayur(M)__Thrissur,M,70012
 Harippad(M)__Alappuzha,M,15691
 Idukki- Kanjikkuzhi__Idukki,P,26809
 Irikkur__Kannur,P,13820
@@ -266,7 +266,7 @@ Kakkodi__Kozhikode,P,42866
 Kakkur__Kozhikode,P,22788
 Kalady__Ernakulam,P,28279
 Kalady__Malappuram,P,5320
-Kalamasseri(M)__Ernakulam,M,7138
+Kalamasseri(M)__Ernakulam,M,71038
 Kalanjoor__Pathanamthitta,P,32047
 Kalikavu__Malappuram,P,7042
 Kallar__Kasaragod,P,19414
@@ -331,7 +331,7 @@ Kasaragod(M)__Kasaragod,M,54172
 Kathiroor__Kannur,P,31087
 Kattakada__Thiruvananthapuram,P,40448
 Kattakambal__Thrissur,P,25903
-Kattappana(M)__Idukki,M,5245
+Kattappana(M)__Idukki,M,52045
 Kattipara__Kozhikode,P,22706
 Kattoor__Thrissur,P,18017
 Kavalam__Alappuzha,P,14010
@@ -359,7 +359,7 @@ Kizhakkambalam__Ernakulam,P,33363
 Kizhakkanchery__Palakkad,P,40928
 Kizhakkoth__Kozhikode,P,31261
 Kizhuvilam__Thiruvananthapuram,P,32901
-Kochi(C)__Ernakulam,C,60246
+Kochi(C)__Ernakulam,C,602046
 Kodakara__Thrissur,P,32298
 Kodamthuruthu__Alappuzha,P,25385
 Kodancheri__Kozhikode,P,34854
@@ -404,7 +404,7 @@ Kottanadu__Pathanamthitta,P,14396
 Kottangal__Pathanamthitta,P,17164
 Kottankara__Kollam,P,39635
 Kottappady__Ernakulam,P,17903
-Kottarakkara(M)__Kollam,M,3055
+Kottarakkara(M)__Kollam,M,30055
 Kottathara__Wayanad,P,3787
 Kottayam__Kannur,P,19176
 Kottayam(M)__Kottayam,M,138283
@@ -440,7 +440,7 @@ Kummil__Kollam,P,20383
 Kundara__Kollam,P,14651
 Kunjimangalam__Kannur,P,18965
 Kunnamangalam__Kozhikode,P,53223
-Kunnamkulam(M)__Thrissur,M,5471
+Kunnamkulam(M)__Thrissur,M,54071
 Kunnamthanam__Pathanamthitta,P,20573
 Kunnathukal__Thiruvananthapuram,P,39414
 Kunnathunad__Ernakulam,P,33508
@@ -528,7 +528,7 @@ Marutharoad__Palakkad,P,34627
 Maruthonkara__Kozhikode,P,19871
 Mathilakam__Thrissur,P,27833
 Mathur__Palakkad,P,25016
-Mattannoor(M)__Kannur,M,4778
+Mattannoor(M)__Kannur,M,47078
 Mattathoor__Thrissur,P,47875
 Mattool__Kannur,P,27806
 Mavelikkara(M)__Alappuzha,M,26421
@@ -663,7 +663,7 @@ Padiyoor__Kannur,P,21524
 Padiyoor__Thrissur,P,18745
 Paingottoor__Ernakulam,P,15441
 Paivalike__Kasaragod,P,34274
-Pala(M)__Kottayam,M,2256
+Pala(M)__Kottayam,M,22056
 Palakkad(M)__Palakkad,M,130955
 Palakuzha__Ernakulam,P,13412
 Palamel__Alappuzha,P,32556
@@ -887,7 +887,7 @@ Thirumittakode__Palakkad,P,31998
 Thirunavaya__Malappuram,P,8484
 Thirunelli__Wayanad,P,6902
 Thirupuram__Thiruvananthapuram,P,18898
-Thirur(M)__Malappuram,M,5658
+Thirur(M)__Malappuram,M,56058
 Thirurangadi(M)__Malappuram,M,56632
 Thiruvaali__Malappuram,P,6086
 Thiruvalla(M)__Pathanamthitta,M,52883
@@ -977,7 +977,7 @@ Varantharappilli__Thrissur,P,40892
 Varapetty__Ernakulam,P,18529
 Varapuzha__Ernakulam,P,26750
 Varavoor__Thrissur,P,20045
-Varkala(M)__Thiruvananthapuram,M,4048
+Varkala(M)__Thiruvananthapuram,M,40048
 Vathikudi__Idukki,P,27670
 Vattamkulam__Malappuram,P,7454
 Vattavada__Idukki,P,5697

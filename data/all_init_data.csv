@@ -1,11 +1,11 @@
-﻿name,S,E,I,R
+name,S,E,I,R
 Adat__Thrissur,31973,0,0,0
 Adichanalloor__Kollam,33638,0,0,0
 Adimali__Idukki,40484,0,0,0
 Adoor(M)__Pathanamthitta,29171,0,0,0
 Agali__Palakkad,34941,0,0,0
 Aiykkaranadu__Ernakulam,21107,0,0,0
-Ajanur__Kasaragod,49153,0,10,0
+Ajanur__Kasaragod,49153,0,0,0
 Akalakunnam__Kottayam,19718,0,0,0
 Akathethara__Palakkad,28592,0,0,0
 Ala__Alappuzha,13395,0,0,0
@@ -106,7 +106,7 @@ Changaroth__Kozhikode,32107,0,0,0
 Chapparapadavu__Kannur,31622,0,0,0
 Chathamangalam__Kozhikode,46688,0,0,0
 Chathanoor__Kollam,28585,0,0,0
-Chavakkad(M)__Thrissur,3998,0,0,0
+Chavakkad(M)__Thrissur,39098,0,0,0
 Chavara__Kollam,42655,0,0,0
 Chazhoor__Thrissur,29141,0,0,0
 Cheekkod__Malappuram,6297,0,0,0
@@ -231,8 +231,8 @@ Ezhome__Kannur,19261,0,0,0
 Ezhukone__Kollam,24251,0,0,0
 Ezhumattoor__Pathanamthitta,18799,0,0,0
 Ezhupunna__Alappuzha,21506,0,0,0
-Feroke(M)__Kozhikode,5474,0,0,0
-Guruvayur(M)__Thrissur,7012,0,0,0
+Feroke(M)__Kozhikode,54074,0,0,0
+Guruvayur(M)__Thrissur,70012,0,0,0
 Harippad(M)__Alappuzha,15691,0,0,0
 Idukki- Kanjikkuzhi__Idukki,26809,0,0,0
 Irikkur__Kannur,13820,0,0,0
@@ -266,7 +266,7 @@ Kakkodi__Kozhikode,42866,0,0,0
 Kakkur__Kozhikode,22788,0,0,0
 Kalady__Ernakulam,28279,0,0,0
 Kalady__Malappuram,5320,0,0,0
-Kalamasseri(M)__Ernakulam,7138,0,0,0
+Kalamasseri(M)__Ernakulam,71038,0,0,0
 Kalanjoor__Pathanamthitta,32047,0,0,0
 Kalikavu__Malappuram,7042,0,0,0
 Kallar__Kasaragod,19414,0,0,0
@@ -288,7 +288,7 @@ Kandanasseri__Thrissur,24452,0,0,0
 Kangazha__Kottayam,20115,0,0,0
 Kanichar__Kannur,19325,0,0,0
 Kaniyampatta__Wayanad,7672,0,0,0
-Kanjangad(M)__Kasaragod,73342,0,23,0
+Kanjangad(M)__Kasaragod,73342,0,0,0
 Kanjikkuzhi__Alappuzha,29951,0,0,0
 Kanjiramkulam__Thiruvananthapuram,18821,0,0,0
 Kanjirapally__Kottayam,43057,0,0,0
@@ -331,7 +331,7 @@ Kasaragod(M)__Kasaragod,54172,0,0,0
 Kathiroor__Kannur,31087,0,0,0
 Kattakada__Thiruvananthapuram,40448,0,0,0
 Kattakambal__Thrissur,25903,0,0,0
-Kattappana(M)__Idukki,5245,0,0,0
+Kattappana(M)__Idukki,52045,0,0,0
 Kattipara__Kozhikode,22706,0,0,0
 Kattoor__Thrissur,18017,0,0,0
 Kavalam__Alappuzha,14010,0,0,0
@@ -359,7 +359,7 @@ Kizhakkambalam__Ernakulam,33363,0,0,0
 Kizhakkanchery__Palakkad,40928,0,0,0
 Kizhakkoth__Kozhikode,31261,0,0,0
 Kizhuvilam__Thiruvananthapuram,32901,0,0,0
-Kochi(C)__Ernakulam,60246,0,0,0
+Kochi(C)__Ernakulam,602046,0,0,0
 Kodakara__Thrissur,32298,0,0,0
 Kodamthuruthu__Alappuzha,25385,0,0,0
 Kodancheri__Kozhikode,34854,0,0,0
@@ -404,7 +404,7 @@ Kottanadu__Pathanamthitta,14396,0,0,0
 Kottangal__Pathanamthitta,17164,0,0,0
 Kottankara__Kollam,39635,0,0,0
 Kottappady__Ernakulam,17903,0,0,0
-Kottarakkara(M)__Kollam,3055,0,0,0
+Kottarakkara(M)__Kollam,30055,0,0,0
 Kottathara__Wayanad,3787,0,0,0
 Kottayam__Kannur,19176,0,0,0
 Kottayam(M)__Kottayam,138283,0,0,0
@@ -440,7 +440,7 @@ Kummil__Kollam,20383,0,0,0
 Kundara__Kollam,14651,0,0,0
 Kunjimangalam__Kannur,18965,0,0,0
 Kunnamangalam__Kozhikode,53223,0,0,0
-Kunnamkulam(M)__Thrissur,5471,0,0,0
+Kunnamkulam(M)__Thrissur,54071,0,0,0
 Kunnamthanam__Pathanamthitta,20573,0,0,0
 Kunnathukal__Thiruvananthapuram,39414,0,0,0
 Kunnathunad__Ernakulam,33508,0,0,0
@@ -528,7 +528,7 @@ Marutharoad__Palakkad,34627,0,0,0
 Maruthonkara__Kozhikode,19871,0,0,0
 Mathilakam__Thrissur,27833,0,0,0
 Mathur__Palakkad,25016,0,0,0
-Mattannoor(M)__Kannur,4778,0,0,0
+Mattannoor(M)__Kannur,47078,0,0,0
 Mattathoor__Thrissur,47875,0,0,0
 Mattool__Kannur,27806,0,0,0
 Mavelikkara(M)__Alappuzha,26421,0,0,0
@@ -663,7 +663,7 @@ Padiyoor__Kannur,21524,0,0,0
 Padiyoor__Thrissur,18745,0,0,0
 Paingottoor__Ernakulam,15441,0,0,0
 Paivalike__Kasaragod,34274,0,0,0
-Pala(M)__Kottayam,2256,0,0,0
+Pala(M)__Kottayam,22056,0,0,0
 Palakkad(M)__Palakkad,130955,0,0,0
 Palakuzha__Ernakulam,13412,0,0,0
 Palamel__Alappuzha,32556,0,0,0
@@ -887,7 +887,7 @@ Thirumittakode__Palakkad,31998,0,0,0
 Thirunavaya__Malappuram,8484,0,0,0
 Thirunelli__Wayanad,6902,0,0,0
 Thirupuram__Thiruvananthapuram,18898,0,0,0
-Thirur(M)__Malappuram,5658,0,0,0
+Thirur(M)__Malappuram,56058,0,0,0
 Thirurangadi(M)__Malappuram,56632,0,0,0
 Thiruvaali__Malappuram,6086,0,0,0
 Thiruvalla(M)__Pathanamthitta,52883,0,0,0
@@ -977,7 +977,7 @@ Varantharappilli__Thrissur,40892,0,0,0
 Varapetty__Ernakulam,18529,0,0,0
 Varapuzha__Ernakulam,26750,0,0,0
 Varavoor__Thrissur,20045,0,0,0
-Varkala(M)__Thiruvananthapuram,4048,0,0,0
+Varkala(M)__Thiruvananthapuram,40048,0,0,0
 Vathikudi__Idukki,27670,0,0,0
 Vattamkulam__Malappuram,7454,0,0,0
 Vattavada__Idukki,5697,0,0,0
