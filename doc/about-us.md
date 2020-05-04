@@ -1,28 +1,70 @@
 # The Team
 
-- Arun Ramachandran, Haritha Keralam Mission
-- Birenjith P. S., 
-  Government Engineering College Bartonhill, Thiruvananthapuram
-- Deepak Rajendraprasad,
-  Indian Institute of Technology Palakkad
-- Sajith V. K., QBurst
-- Sreeram Hariharan, Amazon
+- 	Arun Ramachandran\
+	Haritha Keralam Mission
+
+- 	Birenjith P. S.\
+  	Government Engineering College Bartonhill, Thiruvananthapuram
+
+- 	Deepak Rajendraprasad,\
+  	Indian Institute of Technology Palakkad
+
+- 	Sajith V. K.\
+	QBurst
+
+- 	Sreeram Hariharan\
+	Amazon
 
 The above affiliations may not explain how we came together for this project.
 The affiliations below should.
 
-- Arun, B.Tech EEE, 2001-2005, College of Engineering Trivandrum
-- Biren, B.Tech ECE, 1998-2002, College of Engineering Trivandrum
-- Deepak, B.Tech ECE, 1998-2002, College of Engineering Trivandrum
-- Sajith, B.Tech CSE, 1998-2002, College of Engineering Trivandrum
-- Sreeram, B.Tech ECE, 1999-2003, College of Engineering Trivandrum
+- 	Arun\
+	B.Tech EEE, 2001-2005, College of Engineering Trivandrum
+
+- 	Biren\
+	B.Tech ECE, 1998-2002, College of Engineering Trivandrum
+
+- 	Deepak\
+	B.Tech ECE, 1998-2002, College of Engineering Trivandrum
+
+- 	Sajith\
+	B.Tech CSE, 1998-2002, College of Engineering Trivandrum
+
+- 	Sreeram\
+	B.Tech ECE, 1999-2003, College of Engineering Trivandrum
 
 ### Acknowledgements
 
-- Dr. B. K. Bhavathrathan, 
-  Assistant. Professor, Civil Engineering, IIT Palakkad.
-- Dr. Sahely Bhadra, 
-  Assistant. Professor, Computer Science \& Engineering, IIT Palakkad.
-- Dr. Mrinal Kanti Das
-  Assistant. Professor, Computer Science \& Engineering, IIT Palakkad.
+- 	Dr. Anish T. S.\
+	Associate Professor, Department of Communiity Medicine,\
+	Government Medical College, Thiruvananthapuram.
 
+-	Dr. Sekhar Lukose Kuriakose\
+	Kerala State Disaster Management Authority.
+
+Birenjith had long discussions with Dr. Anish and Dr. Sekhar from the very
+beginning. That helped us immensely in our general understanding of the
+behaviour of the corona virus. Almost all the default parameters for the SEIR
+model that we are using are infomed by those discussions and understanding.
+
+- 	Dr. B. K. Bhavathrathan\
+  	Asst. Professor, Civil Engineering, IIT Palakkad.
+
+- 	Dr. Sahely Bhadra\
+  	Asst. Professor, Computer Science \& Engineering, IIT Palakkad.
+
+- 	Dr. Mrinal Kanti Das\
+  	Asst. Professor, Computer Science \& Engineering, IIT Palakkad.
+
+-	Dr. Sarath Sasi\
+  	Asst. Professor, Mathematics, IIT Palakkad.
+
+-	Prof. P. B. Sunil Kumar\
+	Director, IIT Palakkad.
+
+Deepak benefitted from the discussions with the above faculty members of IIT
+Palakkad. Sahely and Mrinal helped in vetting some of the parameter choices by
+learning them against actual data using techniques from machine learning.
+Bhavath's advice on transportation models and Sarath's inputs on the the
+differential equations were helpful.  Sunil was a constant support to all the
+Covid-19 related activities including this one at IIT Palakkad.

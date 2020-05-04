@@ -65,7 +65,7 @@ There are multiple projections but only one truth. So surely not all these proje
 	designed to give you complete control of the simulator. The only thing you
 	will not be able change from the portal are the underlying models
 	themselves.  For that, you are free to fork and modify [the source
-	code](https://github.com/srhariha/SpatioTemporalSEIR). He hope that you
+	code](https://github.com/srhariha/SpatioTemporalSEIR). We hope that you
 	will make those better simulators available to the first group.
 
 3.	If you are neither of the above, you can use this portal to build your
