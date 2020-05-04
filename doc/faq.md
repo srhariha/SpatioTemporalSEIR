@@ -11,7 +11,7 @@ strategies to enforce, we run the simulator and show the predicted number
 of infectious people (the I in the SEIR model) in each region.  The numbers are
 indicated by a colour scale in the map.
 
-## Where can I see the real data?
+## Where can I see real data?
 
 One good place to see regularly updated real data on the Covid 19 situation in Kerala is <https://covid19kerala.info>.
 
@@ -47,8 +47,7 @@ these projections also. We might do that in the future releases.
 
 ## How can you be so sure?
 
-There are multiple projections but only one truth. So surely not all of them
-can be true. 
+There are multiple projections but only one truth. So surely not all these projections can be true. 
 
 ## Then what's the use of this simulator?
 
@@ -58,7 +57,7 @@ can be true.
 	to test your intution against a mathematical projection. This portal is
 	developed mainly for you.  If you need any help with running the simulator
 	with complex initial seeds and mitigation strategies, feel free to [contact
-	us](./about-us).
+	us](./about-us.md).
 	
 2.	If you are an academician with a recent (that's some of us :) or a long
 	standing interest in epidemiology, then we hope this simulator may be
@@ -66,7 +65,8 @@ can be true.
 	designed to give you complete control of the simulator. The only thing you
 	will not be able change from the portal are the underlying models
 	themselves.  For that, you are free to fork and modify [the source
-	code](https://github.com/srhariha/SpatioTemporalSEIR).
+	code](https://github.com/srhariha/SpatioTemporalSEIR). He hope that you
+	will make those better simulators available to the first group.
 
 3.	If you are neither of the above, you can use this portal to build your
 	intution on the effectiveness of various mitigation strategies and the
