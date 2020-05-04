@@ -6,7 +6,7 @@
 - 	Birenjith P. S.\
   	Government Engineering College Bartonhill, Thiruvananthapuram
 
-- 	Deepak Rajendraprasad,\
+- 	Deepak Rajendraprasad\
   	Indian Institute of Technology Palakkad
 
 - 	Sajith V. K.\
@@ -15,7 +15,7 @@
 - 	Sreeram Hariharan\
 	Amazon
 
-The above affiliations may not explain how we came together for this project.
+The affiliations above may not explain how we came together for this project.
 The affiliations below should.
 
 - 	Arun\

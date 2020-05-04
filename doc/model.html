@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>model</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#timeline-of-the-virus-and-the-seir-model">Timeline of the virus and the SEIR Model</a></li>
+<li><a href="#spatial-mixing">Spatial mixing</a>
+<ul>
+<li><a href="#travel-matrix-t-from-gravity-model">Travel matrix <span class="math inline">\(T\)</span> from Gravity model</a></li>
+<li><a href="#normal-workplace-contact-matrix-w_n">Normal Workplace Contact matrix <span class="math inline">\(W_N\)</span></a></li>
+<li><a href="#mitigated-workplace-contact-matrix-w_m">Mitigated Workplace Contact Matrix <span class="math inline">\(W_M\)</span></a></li>
+<li><a href="#effective-contact-matrix-c">Effective Contact Matrix <span class="math inline">\(C\)</span></a></li>
+</ul></li>
+<li><a href="#putting-it-all-together---spatio-temporal-evolution">Putting it all together - Spatio-Temporal Evolution</a></li>
+<li><a href="#initialisation">Initialisation</a></li>
+<li><a href="#default-parameter-values">Default parameter values</a>
+<ul>
+<li><a href="#seir-model">SEIR model</a></li>
+<li><a href="#gravity-model">Gravity Model</a></li>
+<li><a href="#mitigation-effects">Mitigation effects</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="timeline-of-the-virus-and-the-seir-model">Timeline of the virus and the SEIR Model</h1>
+<figure>
+<img src="./Timeline.png" alt="" /><figcaption>SARS-CoV-2 Timeline</figcaption>
+</figure>
+<p>A person gets infected by SARS-CoV-2 (Covid-19) virus when she comes in contact (either directly or via a shared surface) with an infectious person. A fraction of such people will start showing symptoms within 2 to 14 days (average 5.2 days) and the symptoms will typically last for around 10 days. This is called as the <em>health timeline</em> in the figure below. But what matters more for modelling is the <em>infectivity timeline</em>, which is the period during which an infected person is infectious or contagious. This period is estimated to start typically from about 1 to 2 days before the onset of symptoms and lasts typically for about 6 days. This period is marked as <span class="math inline">\(I\)</span> (Infectious) in the infectivity timeline. The period before that, starting from the day of contact is marked as <span class="math inline">\(E\)</span> (Exposed or Latent). This is when the virus is multiplying in her body but is still not numerous enough to be infectious. The period after <span class="math inline">\(I\)</span> is marked as <span class="math inline">\(R\)</span> (Removed). This is when she is no longer infectious. She might still have symptoms at this stage and will typically take another 8 or more days to be cured. Note that the word “typically” is intentionally overused in this paragraph. All these timelines vary from person to person depending on their health conditions and viral load transmitted at contact.</p>
+<p>The SEIR model of disease spread is based on the infectivity timeline above. It considers the total population <span class="math inline">\(N\)</span> in a region as being split into four compartments based on their stage of infection. The number of people in each compartment change with time but they always add to <span class="math inline">\(N\)</span>.</p>
+<figure>
+<img src="./SEIR.png" alt="" /><figcaption>SEIR model without mixing between regions</figcaption>
+</figure>
+<p>The time evolution of the sizes of these four compartments is modelled by the following four ordinary differential equations.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\dot S   &amp;= -\beta S \frac{I}{N} \\
+\dot E   &amp;= \beta S \frac{I}{N} - \frac{E}{t_E}\\
+\dot I   &amp;= \frac{E}{t_E} - \frac{I}{t_I}\\
+\dot R   &amp;= \frac{I}{t_I}
+\end{aligned}
+\]</span></p>
+<p>Here</p>
+<ul>
+<li><p><span class="math inline">\(\beta = p c\)</span>, where</p>
+<ul>
+<li><p><span class="math inline">\(p\)</span> is the probability that a susceptible person who contacts an infectious person catches the disease (not all contacts transmit the disease)</p></li>
+<li><p><span class="math inline">\(c\)</span> is the expected number of people that a susceptible person contacts in a day. Going further we will have to model it as <span class="math inline">\(c = c_h + c_w\)</span>, where <span class="math inline">\(c_h\)</span> and <span class="math inline">\(c_w\)</span> are the expected number of people that a susceptible person contacts at home and work/school respectively.</p></li>
+<li><p><span class="math inline">\(c \frac{I}{N}\)</span> therefore, is the expected number of infectious people that a susceptible person contacts in a day.</p></li>
+<li><p><span class="math inline">\(p c \frac{I}{N}\)</span> therefore, is the probability that that a susceptible person catches the disease in a day.</p></li>
+</ul></li>
+<li><p><span class="math inline">\(t_E\)</span> and <span class="math inline">\(t_I\)</span> are the mean time that a person spends in the respective compartments, before moving onto the next.</p></li>
+<li><p>The time variable is hidden in the above equations for readability. For example, <span class="math inline">\(S\)</span> should be read as <span class="math inline">\(S(t)\)</span> and <span class="math inline">\(\dot S\)</span> should be read as <span class="math inline">\(\frac{d}{dt}S(t)\)</span>.</p></li>
+</ul>
+<h1 id="spatial-mixing">Spatial mixing</h1>
+<p>We say that a person <em>travels</em> from region <span class="math inline">\(R_i\)</span> to region <span class="math inline">\(R_j\)</span>, if she lives in <span class="math inline">\(R_i\)</span> but goes daily to <span class="math inline">\(R_j\)</span> for work. We will assume that there are <span class="math inline">\(r\)</span> regions in total. Let us denote by <span class="math inline">\(T_{i,j}\)</span>, the number of people travelling for work from region <span class="math inline">\(R_i\)</span> to region <span class="math inline">\(R_j\)</span> in a day. How fast an epidemic spreads over various regions depends mainly on these numbers. Unfortunately, we do not have actual estimates for these numbers. Hence we use a commonly used mathematical model called the <em>gravity model</em> to artificially estimate these numbers.</p>
+<h2 id="travel-matrix-t-from-gravity-model">Travel matrix <span class="math inline">\(T\)</span> from Gravity model</h2>
+<p>The gravity model needs three inputs, some of which we indirectly modelled using the population statistics. We denote the population of region <span class="math inline">\(R_i\)</span> with <span class="math inline">\(N_i\)</span>.</p>
+<ol type="1">
+<li><p><span class="math inline">\(T_i\)</span>, the number of people who travel out from region <span class="math inline">\(R_i\)</span> every day. We need this for for every LSGD in the state. In the absence of direct estimates, we assume <span class="math inline">\(T_i\)</span> indirectly from the 2011 census data as follows.</p>
+<p>Census 2011 contains a histogram of daily travel distances of non-agricultural workers at district level resolution. Since the histogram is coarse and there is no huge variation across districts, we estimate <span class="math inline">\(T_i\)</span> as <span class="math inline">\(T_i = \mu N_i\)</span>, where</p>
+<ul>
+<li><span class="math inline">\(\mu = 0.09\)</span> for regions with area less than <span class="math inline">\(25\)</span> square kilometers</li>
+<li><span class="math inline">\(\mu = 0.04\)</span> for regions with area between <span class="math inline">\(25\)</span> and <span class="math inline">\(100\)</span> square kilometers</li>
+<li><span class="math inline">\(\mu = 0.02\)</span> for regions with area more than <span class="math inline">\(100\)</span> square kilometers</li>
+</ul>
+<p>The values 9%, 4% and 2% used above are based, respectively, on the 2011 census estimate of the percentage of population travelling more than <span class="math inline">\(5\)</span>, <span class="math inline">\(10\)</span> and <span class="math inline">\(20\)</span> kilometers for work (Kerala overall statistics).</p></li>
+<li><p><span class="math inline">\(J_j\)</span> is the number of non-agricultural job opportunities in <span class="math inline">\(R_j\)</span>. We need this too for every LSGD. It will be great if one can find these numbers from a primary source. In the absence of such a source, we model it as <span class="math inline">\(J_j = \zeta N_j\)</span>, where</p>
+<ul>
+<li><span class="math inline">\(\zeta = 0.1\)</span> for grama panchayats,</li>
+<li><span class="math inline">\(\zeta = 0.2\)</span> for municipalities and</li>
+<li><span class="math inline">\(\zeta = 0.3\)</span> for corporations</li>
+</ul>
+<p><em>Notes.</em> Only the relative magnitudes of the three zeta’s matter. We consider only non-agricultural jobs, since census data considers that agricultural sector jobs has very little contribution to long-distance (more than 5 km) daily commuting.</p></li>
+<li><p><span class="math inline">\(d_{i,j}\)</span> is the travel distance between regions <span class="math inline">\(R_i\)</span> and <span class="math inline">\(R_j\)</span>. We need this for every pair of LSGDs.</p></li>
+</ol>
+<p>Using these three inputs, we model the number of people <span class="math inline">\(T_{i,j}\)</span> travelling for work from region <span class="math inline">\(R_i\)</span> to region <span class="math inline">\(R_j\)</span> in a day is as</p>
+<p><span class="math display">\[
+T_{i,j} = \alpha_i \frac {T_i J_j}{d_{i,j}^2}.
+\]</span> where the normalisation factor <span class="math display">\[
+\alpha_i = \left(\sum_{k \neq i}(J_k/d_{i,k}^2)\right)^{-1}.
+\]</span></p>
+<p>We assume the dependence on the distance to be <span class="math inline">\(T_{i,j} \propto 1/d_{i,j}^2\)</span>. This dependence is usually calibrated based on real data of job movement in a region. In the absence of such data for Kerala, we are making an arbitrary choice here based on a subjective validation of the results.</p>
+<p>Putting it all together in one formula, we get</p>
+<p><span class="math display">\[
+T_{i,j} = T_i \frac{(J_j/d_{i,j}^2)}{\sum_{k \neq i}(J_k/d_{i,k}^2)},~ \forall j \neq i,
+\]</span> and then compute <span class="math inline">\(T_{i,i} = N_i - \sum_{k \neq i} T_{i,k}\)</span>. Theoretically <span class="math inline">\(T_{i,i}\)</span> should be <span class="math inline">\(N_i - T_i\)</span>, but it may have rounding errors.</p>
+<h2 id="normal-workplace-contact-matrix-w_n">Normal Workplace Contact matrix <span class="math inline">\(W_N\)</span></h2>
+<p>The <em>Normal Workplace Contact Matrix</em> <span class="math inline">\(W_N\)</span> is an <span class="math inline">\(r \times r\)</span> matrix in which the entry <span class="math inline">\(W_N[i,j]\)</span> is the expected number of people from region <span class="math inline">\(R_j\)</span> that a susceptible person from region <span class="math inline">\(R_i\)</span> will contact at workplace/school during a <em>normal day</em>. We will scale this matrix appropriately for non-normal days, that is days in which any mitigation strategy is active. We model <span class="math inline">\(W_N\)</span> as a function of the population statistics and the travel matrix.</p>
+<p><span class="math display">\[
+W_N[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}},
+\]</span> where</p>
+<ul>
+<li><p><span class="math inline">\(c_w\)</span> is the expected number of people that a susceptible person contacts at work/school on a normal day,</p></li>
+<li><p><span class="math inline">\(N_i\)</span> is the population of region <span class="math inline">\(R_i\)</span>, and</p></li>
+<li><p><span class="math inline">\(T_{i,j}\)</span> is the expected number of people travelling for work from region <span class="math inline">\(R_i\)</span> to region <span class="math inline">\(R_j\)</span> on a normal day.</p></li>
+</ul>
+<p><em>Justification.</em> If we consider a person picked uniformly at random from region <span class="math inline">\(R_i\)</span>, the term <span class="math inline">\(T_{i,k} / N_i\)</span> can be interpreted as the probability that she goes for work in region <span class="math inline">\(R_k\)</span> and the term <span class="math inline">\(T_{j,k} / \sum_{l=1}^{r} T_{l,k}\)</span> can be interpreted as the probability that a person she contacts at workplace (while at work in region <span class="math inline">\(R_k\)</span>) has come to work there from region <span class="math inline">\(R_j\)</span>. Notice that the total number of people in region <span class="math inline">\(R_k\)</span> during the day is not <span class="math inline">\(N_k\)</span> but <span class="math inline">\(\sum_{l=1}^{r} T_{l,k}\)</span>. Since we have chosen <span class="math inline">\(T_{k,k}\)</span> as <span class="math inline">\(N_k - T_k\)</span>, this sum will automatically account for the people who live and work in <span class="math inline">\(R_k\)</span>.</p>
+<h2 id="mitigated-workplace-contact-matrix-w_m">Mitigated Workplace Contact Matrix <span class="math inline">\(W_M\)</span></h2>
+<p>The <em>mitigated workplace contact matrix</em> <span class="math inline">\(W_M\)</span> is a function of the normal workplace contact matrix <span class="math inline">\(W_N\)</span> and the various mitigation strategies like break-the-chain, lockdowns, hotspots etc that are active in the state on a day. The entry <span class="math inline">\(W_M[i,j]\)</span> will represent the expected number of people from region <span class="math inline">\(R_j\)</span> that a susceptible person from region <span class="math inline">\(R_i\)</span> will contact at workplace/school during a day when all the active mitigation strategies are in place.</p>
+<p>This matrix will have to be recomputed whenever there is a change in mitigation strategies. The reduction in workplace contact rate due to each mitigation strategy is captured by an <span class="math inline">\(r \times r\)</span> mitigation matrices <span class="math inline">\(M\)</span> as follows.</p>
+<ol start="0" type="1">
+<li>Normal day
+<ul>
+<li>The mitigation matrix <span class="math inline">\(M_N\)</span> is all <span class="math inline">\(1\)</span></li>
+<li><em>Inputs</em> : None</li>
+</ul></li>
+<li>Break the Chain
+<ul>
+<li>The mitigation matrix <span class="math inline">\(M_{BC}\)</span> is all <span class="math inline">\(\epsilon_{BC}\)</span> .</li>
+<li><em>Inputs</em> : Date ranges</li>
+</ul></li>
+<li>Complete Lockdown
+<ul>
+<li>The mitigation matrix <span class="math inline">\(M_{LD}\)</span> is all <span class="math inline">\(\epsilon_{LD}\)</span> .</li>
+</ul></li>
+<li>District Border Closure
+<ul>
+<li><span class="math inline">\(M_{DB}[i,j] = 1\)</span> if <span class="math inline">\(R_i\)</span> and <span class="math inline">\(R_j\)</span> are in the same district</li>
+<li><span class="math inline">\(M_{DB}[i,j] = \epsilon_{DB}\)</span> if <span class="math inline">\(R_i\)</span> and <span class="math inline">\(R_j\)</span> are in different districts</li>
+<li>In a seven-region toy example with regions 1 and 2 in the first district, regions 3, 4 and 5 in the second district and regions 6 and 7 in the third, the <span class="math inline">\(M_{DB}\)</span> matrix will look like <span class="math display">\[
+\begin{bmatrix}
+1 &amp; 1 &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB}  &amp; \epsilon_{DB} &amp; \epsilon_{DB} \\
+1 &amp; 1 &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB}  &amp; \epsilon_{DB} &amp; \epsilon_{DB} \\
+\epsilon_{DB} &amp; \epsilon_{DB} &amp; 1 &amp; 1 &amp; 1  &amp; \epsilon_{DB} &amp; \epsilon_{DB} \\
+\epsilon_{DB} &amp; \epsilon_{DB} &amp; 1 &amp; 1 &amp; 1  &amp; \epsilon_{DB} &amp; \epsilon_{DB} \\
+\epsilon_{DB} &amp; \epsilon_{DB} &amp; 1 &amp; 1 &amp; 1  &amp; \epsilon_{DB} &amp; \epsilon_{DB} \\
+\epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; 1 &amp; 1 \\
+\epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; \epsilon_{DB} &amp; 1 &amp; 1 
+\end{bmatrix}
+\]</span></li>
+<li><em>Inputs</em> : Date ranges</li>
+</ul></li>
+<li>Hotspots
+<ul>
+<li><span class="math inline">\(M_{HS}[i,j] = \epsilon_{HS}\)</span> if either <span class="math inline">\(R_i\)</span> or <span class="math inline">\(R_j\)</span> is a hotspot. Otherwise it is <span class="math inline">\(1\)</span>.</li>
+<li>In the seven-region toy example with regions 2,3 and 7 declared as hotspots, <span class="math inline">\(M_{HS}\)</span> matrix will look like <span class="math display">\[
+\begin{bmatrix}
+1 &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; 1 &amp; 1 &amp; 1 &amp; \epsilon_{HS} \\
+\epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} \\
+\epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} \\
+1 &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; 1 &amp; 1 &amp; 1 &amp; \epsilon_{HS} \\
+1 &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; 1 &amp; 1 &amp; 1 &amp; \epsilon_{HS} \\
+1 &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; 1 &amp; 1 &amp; 1 &amp; \epsilon_{HS} \\
+\epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} &amp; \epsilon_{HS}  &amp; \epsilon_{HS} &amp; \epsilon_{HS} 
+\end{bmatrix}
+\]</span></li>
+<li><em>Inputs</em> : Date ranges and list of hotspots</li>
+</ul></li>
+<li>Red and Orange Zones - <span class="math inline">\(M_{RZ}[i,j] = \epsilon_{RZ}\)</span> if either <span class="math inline">\(R_i\)</span> or <span class="math inline">\(R_j\)</span> is in a red zone district. Otherwise it is <span class="math inline">\(1\)</span>. - In the seven-region toy example with distict-2 (regions 3,4 and 5) declared as red zone, <span class="math inline">\(M_{RZ}\)</span> matrix will look like <span class="math display">\[
+ \begin{bmatrix}
+ 1 &amp; 1 &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; 1 &amp; 1 \\
+ 1 &amp; 1 &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; 1 &amp; 1 \\
+ \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} \\
+ \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} \\
+ \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ}  &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} \\
+ 1 &amp; 1 &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; 1 &amp; 1 \\
+ 1 &amp; 1 &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; \epsilon_{RZ} &amp; 1 &amp; 1
+ \end{bmatrix}
+ \]</span> - <em>Inputs</em> : Date ranges and list of LSGDs under red zone<br />
+- Orange zone is similar to red zone, but with a different <span class="math inline">\(\epsilon\)</span></li>
+</ol>
+<p>The effective mitigation matrix <span class="math inline">\(M\)</span> for a day is obtained by taking a <strong>pointwise minimum</strong> of all the mitigations active during that day. The mitigated workplace contact matrix is obtained by <strong>pointwise multiplying</strong> <span class="math inline">\(M\)</span> and <span class="math inline">\(W_N\)</span>.</p>
+<h2 id="effective-contact-matrix-c">Effective Contact Matrix <span class="math inline">\(C\)</span></h2>
+<p>The <em>Effective Contact Matrix</em> <span class="math inline">\(C\)</span> is obtained from the mitigated workplace contact matrix <span class="math inline">\(W_M\)</span> by adding expected number of daily household contacts <span class="math inline">\(c_h\)</span> to each diagonal entry of <span class="math inline">\(W_M\)</span>. This is justified since all household contacts happen in the region of a person’s living.</p>
+<p><span class="math display">\[
+\begin{aligned}
+C[i,j] &amp;= W_M[i,j], i \neq j, \\
+C[i,i] &amp;= W_M[i,i] + c_h.
+\end{aligned}
+\]</span></p>
+<h1 id="putting-it-all-together---spatio-temporal-evolution">Putting it all together - Spatio-Temporal Evolution</h1>
+<p>Finally we put all these together to form a four ordinary differential equations per region. The first two equations for each region contain terms from other regions too.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\dot S_i &amp;= -p S_i \sum_{j=1}^{n} C_{i,j} \frac{I_j}{N_j} \\
+\dot E_i &amp;=  p S_i \sum_{j=1}^{n} C_{i,j}\frac{I_j}{N_j} - \frac{E_i}{t_E} \\
+\dot I_i &amp;=  \frac{E_i}{t_E} - \frac{I_i}{t_I}\\
+\dot R_i &amp;=  \frac{I_i}{t_I}
+\end{aligned}
+\]</span></p>
+<p>See below the time evolution equations of the SEIR model for a description of the variables used. In the simulator we discretise the above by assuming that time advances in steps of one day, and hence treat <span class="math inline">\(\dot S_i\)</span> as the daily increment to <span class="math inline">\(S_i\)</span>. That is, <span class="math inline">\(\dot S_i = S_i(t+1) - S_i(t)\)</span>. Our simulator starts with the initial states of each variable, <span class="math inline">\(S_i(0)\)</span> , <span class="math inline">\(E_i(0)\)</span>, <span class="math inline">\(I_i(0)\)</span> and <span class="math inline">\(R_i(0)\)</span> and then updates it according to the above increment rules.</p>
+<h1 id="initialisation">Initialisation</h1>
+<p>Currently we are doing a very simple initialisation by adding the seed numbers of infectious people entered by the user directly to Compartment <span class="math inline">\(I\)</span> and keeping the <span class="math inline">\(E\)</span> and <span class="math inline">\(R\)</span> compartments empty. While this is a natural thing to do in a simulator, we remark that this is not a very realistic scenario once the epidemic has started spreading.</p>
+<h1 id="default-parameter-values">Default parameter values</h1>
+<h2 id="seir-model">SEIR model</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Parameter</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(p\)</span></td>
+<td style="text-align: left;">0.02</td>
+<td style="text-align: left;">Probability of infection per contact</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(c_h\)</span></td>
+<td style="text-align: left;">5 persons</td>
+<td style="text-align: left;">Mean contacts per day in households</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(c_w\)</span></td>
+<td style="text-align: left;">15 persons</td>
+<td style="text-align: left;">Mean contacts per day in workplace</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(t_E\)</span></td>
+<td style="text-align: left;">3 days</td>
+<td style="text-align: left;">Mean latent period</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(t_I\)</span></td>
+<td style="text-align: left;">6 days</td>
+<td style="text-align: left;">Mean latent period</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gravity-model">Gravity Model</h2>
+<p>Currently these parameters cannot be changed for the simulator. This is because we pre-compute and store the travel matrix to save a lot of repeated computation.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Parameter</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(\eta\)</span></td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">Distance exponent in Gravity model</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(A_S\)</span></td>
+<td style="text-align: left;">25 sq.km.</td>
+<td style="text-align: left;">Area up to which an LSG is treated as small</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(A_L\)</span></td>
+<td style="text-align: left;">100 sq.km.</td>
+<td style="text-align: left;">Area above which an LSG is treated as large</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\mu_S\)</span></td>
+<td style="text-align: left;">0.09</td>
+<td style="text-align: left;">Fraction of population who travel out for work</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">from a small LSG</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\mu_M\)</span></td>
+<td style="text-align: left;">0.04</td>
+<td style="text-align: left;">Fraction of population who travel out for work</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">from a medium LSG</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\mu_L\)</span></td>
+<td style="text-align: left;">0.02</td>
+<td style="text-align: left;">Fraction of population who travel out for work</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">from a large LSG</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\zeta_P\)</span></td>
+<td style="text-align: left;">0.1</td>
+<td style="text-align: left;">Jobs per person in a panchayath</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(\zeta_M\)</span></td>
+<td style="text-align: left;">0.2</td>
+<td style="text-align: left;">Jobs per person in a municipality</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\zeta_C\)</span></td>
+<td style="text-align: left;">0.3</td>
+<td style="text-align: left;">Jobs per person in a corporation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mitigation-effects">Mitigation effects</h2>
+<p>These are the ratio by which we multiply the relevant entries in the contact matrix when each of the mitigation strategies is active. If more than one multiplier apply to an entry, we take the minimum of those multipliers.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Multiplier</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Mitigation strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{BC}\)</span></td>
+<td style="text-align: left;">2/3</td>
+<td style="text-align: left;">Break-the-chain</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{LD}\)</span></td>
+<td style="text-align: left;">1/3</td>
+<td style="text-align: left;">Complete Lockdown</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{DB}\)</span></td>
+<td style="text-align: left;">1/3</td>
+<td style="text-align: left;">District Border Closure</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{RZ}\)</span></td>
+<td style="text-align: left;">1/3</td>
+<td style="text-align: left;">Red Zone</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{OZ}\)</span></td>
+<td style="text-align: left;">1/3</td>
+<td style="text-align: left;">Orange Zone</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="math inline">\(\epsilon_{HS}\)</span></td>
+<td style="text-align: left;">1/4</td>
+<td style="text-align: left;">Hotspot</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
