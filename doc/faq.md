@@ -1,5 +1,3 @@
-This is an anticipated FAQ. Last updated on \today.
-
 ## Is this real data? If not, then what?
 
 *Absolutely Not.* We are only showing the *projections* from a simulator which
@@ -21,6 +19,10 @@ One good place to see regularly updated real data on the Covid 19 situation in K
 the pairwise aerial distance between LSGs (extracted from GIS maps).  We also
 make an indirect use of the statistics on daily commute distance of
 non-agricultural workers in Kerala (from 2011 census data).
+
+## Do you use any patient data?
+
+*No.* The simulator runs based on the intital seed given by the user.
 
 ## What are the factors which influence the projections?
 
