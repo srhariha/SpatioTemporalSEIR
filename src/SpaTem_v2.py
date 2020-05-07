@@ -264,8 +264,6 @@ def getDynamicRedZoneMitigationMatrix(day, r, initDataDF,  dynamicRedZones, mode
             regionsInDistrictList = initDataDF.index[initDataDF['district'] == district]
             for regionsInDistrictIndex in regionsInDistrictList:
                 fillRegion(M, regionsInDistrictIndex, modelParameter["eRZ"])
-                
-            
     return M
 
 
@@ -369,7 +367,8 @@ def timeloop(initDataDF, userParameterData, modelParameter, r, popDataDF,NO_OF_D
 
 def simulate(seed={}, mitigations={}, modelparams={}, number_of_days = 60, case_multiplier=1):
     
-    userParameterNone = { "breakTheChains" : [], "completeLockDowns" :  [], "districtLockDowns" :  [], "hotSpots": [], "redZones": [], "orangeZones": [] }
+    userParameterNone = { "breakTheChains" : [], "completeLockDowns" :  [], "districtLockDowns" :  [],
+                         "dynamicHotSpots": [], "dynamicZones": [] }
 
     
     if len(mitigations) == 0:
