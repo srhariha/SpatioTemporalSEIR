@@ -1,3 +1,7 @@
+---
+title: Anticipated Questions
+---
+
 ## How do I use your simulator?
 
 Please see this [short guide](/).
@@ -99,5 +103,5 @@ faster.
 
 ## Can I see the math behind the code?
 
-*Yes*, you are most welcome to read the [mathematical description of our model](./model.md)
+*Yes*, you are most welcome to read the [mathematical description of our model](./model.html)
 

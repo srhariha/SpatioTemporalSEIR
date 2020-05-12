@@ -1,5 +1,5 @@
 ---
-title: The Mathematical Models Behind The Simulator
+title: The Mathematical Model Behind This Simulator
 ---
 
 The *covidsim.in* simulator combines two standard mathematical models -- the

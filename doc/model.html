@@ -1,3 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The Mathematical Model Behind This Simulator</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">The Mathematical Model Behind This Simulator</h1>
+</header>
 <p>The <em>covidsim.in</em> simulator combines two standard mathematical models – the SEIR model for epidemic time evolution and the Gravity Model for movement of people between regions for daily work. Each Local Self Government (LSG) division (grama panchayath, municipality or municipal corporation) in Kerala is treated as a separate region. So we have 1035 regions in total – 941 grama panchayaths, 87 municipalities, 6 municipal corporations and Mahe treated as a separate region. A separate SEIR evolution is run for each region with number of people equal to the population of that region as per 2011 census. These 1035 SEIR evolutions are coupled by cross-infections through people travelling for daily work between regions. Since we do not have direct data on the number of people travelling between two regions, we assume those numbers using a simple Gravity Model that is fairly common in transportation studies. The details of each of the models and their coupling is given in the following sections. We also describe how we model the effect of various mitigation strategies like break-the-chain, complete lockdown, district boundary closures, dynamic hotspots, dynamic red/orange/green zones etc.</p>
 <h1 id="timeline-of-the-virus-and-the-seir-model">Timeline of the virus and the SEIR Model</h1>
 <figure>
@@ -324,3 +348,5 @@ C[i,i] &amp;= W_M[i,i] + C_h.
 </tr>
 </tbody>
 </table>
+</body>
+</html>

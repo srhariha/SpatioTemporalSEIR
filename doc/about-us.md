@@ -1,3 +1,7 @@
+---
+title: The People Behind This Simulator
+---
+
 # The Team
 
 - 	Arun Ramachandran
