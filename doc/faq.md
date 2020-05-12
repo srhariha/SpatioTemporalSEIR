@@ -1,3 +1,7 @@
+## How do I use your simulator?
+
+Please see this [short guide](/).
+
 ## Is this real data? If not, then what?
 
 *Absolutely Not.* We are only showing the *projections* from a simulator which

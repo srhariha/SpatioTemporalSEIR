@@ -1,7 +1,6 @@
 # The Team
 
-- 	Arun Ramachandran\
-	Haritha Keralam Mission
+- 	Arun Ramachandran
 
 - 	Birenjith P. S.\
 	Assistant Professor,
@@ -16,7 +15,7 @@
 - 	Sreeram Hariharan\
 	Senior Developer, Amazon Palo Alto[^1]
 
--	Kiran Chandramohan\
+-	Kiran Chandramohan
 
 [^1]: Not under offical capacity
 

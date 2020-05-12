@@ -1,3 +1,25 @@
+---
+title: The Mathematical Models Behind The Simulator
+---
+
+The *covidsim.in* simulator combines two standard mathematical models -- the
+SEIR model for epidemic time evolution and the Gravity Model for movement of
+people between regions for daily work. Each Local Self Government (LSG)
+division (grama panchayath, municipality or municipal corporation) in Kerala
+is treated as a separate region. So we have 1035 regions in total -- 941 grama
+panchayaths, 87 municipalities, 6 municipal corporations and Mahe treated as a
+separate region.  A separate SEIR evolution is run for each region with number
+of people equal to the population of that region as per 2011 census. These 1035
+SEIR evolutions are coupled by cross-infections through people travelling for
+daily work between regions. Since we do not have direct data on the number of
+people travelling between two regions, we assume those numbers using a simple
+Gravity Model that is fairly common in transportation studies. The details of
+each of the models and their coupling is given in the following sections. We
+also describe how we model the effect of various mitigation strategies like
+break-the-chain, complete lockdown, district boundary closures, dynamic
+hotspots, dynamic red/orange/green zones etc.
+
+
 # Timeline of the virus and the SEIR Model
 
 ![SARS-CoV-2 Timeline](./Timeline.png)
@@ -42,24 +64,30 @@ $$
 
 Here 
 
--	$\beta = p c$, where
+-	$\beta = p C$, where
 	-	$p$ is the probability that a susceptible person who contacts an
 		infectious person catches the disease (not all contacts transmit the
 		disease)
 
-	-	$c$ is the expected number of people that a susceptible person contacts
-		in a day. Going further we will have to model it as $c = c_h + c_w$,
-		where $c_h$ and $c_w$ are the expected number of people that a
+	-	$C$ is the expected number of people that a susceptible person contacts
+		in a day. 
+
+		Going further we will have to model it as $C = C_h + C_w$,
+		where $C_h$ and $C_w$ are the expected number of people that a
 		susceptible person contacts at home and work/school respectively.
 
-	-	$c \frac{I}{N}$ therefore, is the expected number of infectious
+	-	$C \frac{I}{N}$ therefore, is the expected number of infectious
 		people that a susceptible person contacts in a day.
 
-	-	$p c \frac{I}{N}$ therefore, is the probability that that a
+	-	$p C \frac{I}{N}$ therefore, is the probability that that a
 		susceptible person catches the disease in a day.
 
--	$t_E$ and $t_I$ are the mean time that a person spends in
-	the respective compartments, before moving onto the next.
+-	$t_E$ is the mean time that a person spends in compartment $E$. That is,
+	the typical time from contact of the virus till the person starts becoming
+	infectious (contagious)
+
+-	$t_I$ is the mean time that a person spends in compartment $I$. That is,
+	the typical time a person remains infectious (contagious).
 
 - 	The time variable is hidden in the above equations for readability. For
 	example,  $S$ should be read as $S(t)$ and $\dot S$ should be read as
@@ -116,8 +144,9 @@ $N_i$.
 	agricultural sector jobs has very little contribution to long-distance
 	(more than 5 km) daily commuting.
 
-3.	$d_{i,j}$ is the travel distance between regions $R_i$ and $R_j$. We need
-	this for every pair of LSGDs.
+3.	$d_{i,j}$ is the distance between regions $R_i$ and $R_j$. We need this for
+	every pair of LSGDs. We use the aerial distance between the centers of 
+	the region calculated from an LSG level GIS map of Kerala.
 
 Using these three inputs, we model the number of people $T_{i,j}$ travelling
 for work from region $R_i$ to region $R_j$ in a day is as
@@ -140,8 +169,10 @@ Putting it all together in one formula, we get
 $$
 T_{i,j} = T_i \frac{(J_j/d_{i,j}^2)}{\sum_{k \neq i}(J_k/d_{i,k}^2)},~ \forall j \neq i,
 $$
-and then compute $T_{i,i} = N_i - \sum_{k \neq i} T_{i,k}$. Theoretically
-$T_{i,i}$ should be $N_i - T_i$, but it may have rounding errors.
+and then compute $T_{i,i} = N_i - T_i$, the number of people in region $R_i$
+who work/stay in $R_i$ itself. So if there are $r$ regions in total, all
+these $T_{i,j}$ values are arranged as an $r \times r$ matrix $T$.
+
 
 ##	Normal Workplace Contact matrix $W_N$
 
@@ -153,11 +184,11 @@ is days in which any mitigation strategy is active. We model $W_N$ as a
 function of the population statistics and the travel matrix.
 
 $$
-W_N[i,j] = c_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}},
+W_N[i,j] = C_w \sum_{k=1}^{r} \frac{T_{i,k}}{N_i} \frac{T_{j,k}}{\sum_{l=1}^{r} T_{l,k}},
 $$
 where
 
--	$c_w$ is the expected number of people that a susceptible person contacts
+-	$C_w$ is the expected number of people that a susceptible person contacts
 	at work/school on a normal day,
 
 -	$N_i$ is the population of region $R_i$, and
@@ -186,93 +217,33 @@ $R_j$ that a susceptible person from region $R_i$ will contact at
 workplace/school during a day when all the active mitigation strategies are in
 place.
 
-This matrix will have to be recomputed whenever there is a change in mitigation
-strategies. The reduction in workplace contact rate due to each mitigation
-strategy is captured by an $r \times r$  mitigation matrices $M$ as follows.
-
-0.	Normal day
-	- The mitigation matrix $M_N$ is all $1$
-	- *Inputs* : None
-
-1.	Break the Chain
-	- The mitigation matrix $M_{BC}$ is all $\epsilon_{BC}$ .
-	- *Inputs* : Date ranges
-
-2.	Complete Lockdown 
-	- The mitigation matrix $M_{LD}$ is all $\epsilon_{LD}$ .
-
-3.	District Border Closure
-	- $M_{DB}[i,j] = 1$ if $R_i$ and $R_j$ are in the same district
-	- $M_{DB}[i,j] = \epsilon_{DB}$ if $R_i$ and $R_j$ are in different districts
-	- In a seven-region toy example with regions 1 and 2 in the first district,
-	  regions 3, 4 and 5 in the second district and regions 6 and 7 in the
-	  third, the $M_{DB}$ matrix will look like
-	  $$
-	  \begin{bmatrix}
-	  1 & 1 & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB}  & \epsilon_{DB} & \epsilon_{DB} \\
-	  1 & 1 & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB}  & \epsilon_{DB} & \epsilon_{DB} \\
-	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
-	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
-	  \epsilon_{DB} & \epsilon_{DB} & 1 & 1 & 1  & \epsilon_{DB} & \epsilon_{DB} \\
-	  \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & 1 & 1 \\
-	  \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & \epsilon_{DB} & 1 & 1 
-	  \end{bmatrix}
-	  $$
-	- *Inputs* : Date ranges
-
-4.	Hotspots
-	- $M_{HS}[i,j] = \epsilon_{HS}$ if either $R_i$ or $R_j$ is a hotspot.
-	  Otherwise it is $1$.
-	- In the seven-region toy example with regions 2,3 and 7 declared as
-	  hotspots, $M_{HS}$ matrix will look like
-	  $$
-	  \begin{bmatrix}
-	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
-	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} \\
-	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} \\
-	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
-	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
-	  1 & \epsilon_{HS} & \epsilon_{HS} & 1 & 1 & 1 & \epsilon_{HS} \\
-	  \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} & \epsilon_{HS}  & \epsilon_{HS} & \epsilon_{HS} 
-	  \end{bmatrix}
-	  $$
-	- *Inputs* : Date ranges and list of hotspots
-
-5.	 Red and Orange Zones
-	- $M_{RZ}[i,j] = \epsilon_{RZ}$ if either $R_i$ or $R_j$ is in a red zone
-	  district.  Otherwise it is $1$.
-	- In the seven-region toy example with distict-2 (regions 3,4 and 5)
-	  declared as red zone, $M_{RZ}$ matrix will look like
-	  $$
-	  \begin{bmatrix}
-	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
-	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
-	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
-	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
-	  \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ}  & \epsilon_{RZ} & \epsilon_{RZ} \\
-	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1 \\
-	  1 & 1 & \epsilon_{RZ} & \epsilon_{RZ} & \epsilon_{RZ} & 1 & 1
-	  \end{bmatrix}
-	  $$
-	- *Inputs* : Date ranges and list of LSGDs under red zone \
-	- Orange zone is similar to red zone, but with a different $\epsilon$
-
-The effective mitigation matrix $M$ for a day is obtained by taking a
-**pointwise minimum** of all the mitigations active during that day. The
-mitigated workplace contact matrix is obtained by **pointwise multiplying** $M$
-and $W_N$.
+The effect of a containment mitigation strategy like lockdown, hotspot, red
+zone and orange zone in a region $R_i$  is mathematically treated as a scaling
+down of the values $W_N[i,j]$ and $W_N[j,i]$ (for all $j$) by fractions
+$\epsilon_{LD}$, $\epsilon_{HS}$, $\epsilon_{RZ}$, and $\epsilon_{OZ}$
+respectively. District border closure is mathematically treated as a scaling
+down of contacts between different districts by a fraction $\epsilon_{DB}$.  If
+multiple containment strategies are in place at the same time, then the
+scale-down factor selected is the one for the strongest strategy. The effect of
+social distancing mitigation strategies like break-the-chain is modelled as a
+further scale down of the above $W_N[i,j]$ values by a fraction
+$\epsilon_{BC}$. (See the last section for default values of all these
+fractions). The matrix with these scaled down entries is called $W_M$, the
+mitigated workplace contact matrix.
 
 ## Effective Contact Matrix $C$
 
 The *Effective Contact Matrix* $C$ is obtained from the mitigated workplace
 contact matrix $W_M$ by adding expected number of daily household contacts
-$c_h$ to each diagonal entry of $W_M$. This is justified since all household
-contacts happen in the region of a person's living.
+$C_h$ to each diagonal entry of $W_M$. This is justified since all household
+contacts happen in the region of a person's living. Moreover, we assume that no
+mitigation strategy is effective in reducing the household transmission of
+infection.
 
 $$
 \begin{aligned}
 C[i,j] &= W_M[i,j], i \neq j, \\
-C[i,i] &= W_M[i,i] + c_h.
+C[i,i] &= W_M[i,i] + C_h.
 \end{aligned}
 $$
 
@@ -291,12 +262,13 @@ $$
 \end{aligned}
 $$
 
-See below the time evolution equations of the SEIR model for a description of
-the variables used.  In the simulator we discretise the above by assuming that
-time advances in steps of one day, and hence treat $\dot S_i$ as the daily
-increment to $S_i$. That is,  $\dot S_i = S_i(t+1) - S_i(t)$. Our simulator
-starts with the initial states of each variable, $S_i(0)$ , $E_i(0)$, $I_i(0)$
-and $R_i(0)$ and then updates it according to the above increment rules.
+The variables $p$, $t_E$ and $t_I$ are the same as those for the simple SEIR
+model described in the beginning.  In the simulator we discretise the above by
+assuming that time advances in steps of one day, and hence treat $\dot S_i$ as
+the daily increment to $S_i$. That is,  $\dot S_i = S_i(t+1) - S_i(t)$. Our
+simulator starts with the initial states of each variable, $S_i(0)$ , $E_i(0)$,
+$I_i(0)$ and $R_i(0)$ and then updates it according to the above increment
+rules.
 
 # Initialisation
 
@@ -311,13 +283,42 @@ epidemic has started spreading.
 
 ## SEIR model
 
+These parameter values can be changed by an user using the advanced controls.
+
 Parameter  | Value       | Description
 ---------: | :------     | :----
 $p$        | 0.02        | Probability of infection per contact
-$c_h$      | 5	persons  | Mean contacts per day in households
-$c_w$      | 15 persons  | Mean contacts per day in workplace
+$C_h$      | 5	persons  | Mean contacts per day in households
+$C_w$      | 15 persons  | Mean contacts per day in workplace
 $t_E$      | 3 days      | Mean latent period
 $t_I$      | 6 days      | Mean latent period
+
+## Mitigation effects
+
+These parameter values can be changed by an user using the advanced controls.
+
+ Multiplier      Value    Mitigation strategy
+-----------      ------   ----
+$\epsilon_{BC}$  2/3      Break-the-chain
+$\epsilon_{LD}$  1/3      Complete Lockdown
+$\epsilon_{DB}$  1/3      District Border Closure
+$\epsilon_{RZ}$  1/3      Red Zone
+$\epsilon_{OZ}$  1/3      Orange Zone
+$\epsilon_{HS}$  1/4      Hotspot
+$n_{HS}$		 1 case   Minimum number of active reported cases
+						  to declare a region as a hotspot
+$n_{RZ}$		 10 cases Minimum number of active reported cases
+						  to declare a district as a red zone
+$a_R$			 1   	  Fraction of infectious cases 
+						  getting reported and confirmed
+$d_R$			 5 days   Mean delay in an infectious case
+						  getting reported and confirmed
+$d_{HS}$		 7 days	  Minimum number of days a region will remain
+						  as a hotspot once it becomes one
+$d_{RZ}$		 7 days   Minimum number of days a district will remain
+						  as a red zone once it becomes one
+$d_{GZ}$		 21 days  Number of days with no new infections reported
+						  so that a district can become a green zone again
 
 ## Gravity Model
 
@@ -338,18 +339,4 @@ $\mu_L$     0.02        Fraction of population who travel out for work
 $\zeta_P$   0.1         Jobs per person in a panchayath
 $\zeta_M$   0.2         Jobs per person in a municipality
 $\zeta_C$   0.3         Jobs per person in a corporation
-
-## Mitigation effects
-
-These are the ratio by which we multiply the relevant entries in the
-contact matrix when each of the mitigation strategies is active. If more than one multiplier apply to an entry, we take the minimum of those multipliers.
-
-Multiplier      | Value   | Mitigation strategy
----------:      | :------ | :----
-$\epsilon_{BC}$ | 2/3     | Break-the-chain
-$\epsilon_{LD}$ | 1/3     | Complete Lockdown
-$\epsilon_{DB}$ | 1/3     | District Border Closure
-$\epsilon_{RZ}$ | 1/3     | Red Zone
-$\epsilon_{OZ}$ | 1/3     | Orange Zone
-$\epsilon_{HS}$ | 1/4     | Hotspot
 
