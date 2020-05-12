@@ -2,13 +2,16 @@
 title: The People Behind This Simulator
 ---
 
+Contact Address: <covidsim.in@gmail.com>
+
+
 # The Team
 
 - 	Arun Ramachandran
 
 - 	Birenjith P. S.\
 	Assistant Professor,
-  	Government Engineering College Bartonhill, Thiruvananthapuram
+  	Govt. Engineering College Bartonhill, Thiruvananthapuram
 
 - 	Deepak Rajendraprasad\
 	Assistant Professor, [Indian Institute of Technology Palakkad](https://iitpkd.ac.in)
@@ -82,3 +85,13 @@ differential equations were helpful.  Sunil was a constant support to all the
 Covid-19 related activities including this one at IIT Palakkad.
 
 -	Kerala State Spatial Data Infrastructure (KSDI) for LSG shapefiles
+
+### Software Development Team
+
+- 	Binu Ravi,   Manager, UI Design, QBurst
+-	Sabique Lava, Data Scientist, QBurst
+-	Athira TP,  Software Engineer, QBurst
+-	Athul Devin, Software Engineer, QBurst
+-	Aswath E, Software Engineer, QBurst
+-	Riya K, Software Engineer, QBurst
+-	Nikhil Tharayil, Engineer, Quality Assurance, QBurst

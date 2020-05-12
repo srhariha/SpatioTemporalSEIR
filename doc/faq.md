@@ -4,7 +4,7 @@ title: Anticipated Questions
 
 ## How do I use your simulator?
 
-Please see this [short guide](/).
+Please see this [short guide](https://docs.google.com/presentation/d/e/2PACX-1vSOgrZXj_BpvBUEFg8sfUhxwtOsJu1gZ9c643KSaH8mTf57MJvCDtmz6QyxRDDV_S-gSlcdz4C8b7tw/pub?start=false&loop=false&delayms=3000).
 
 ## Is this real data? If not, then what?
 
@@ -66,8 +66,8 @@ There are multiple projections but only one truth. So surely not all these proje
 	will spread in Kerala under various scenarios. You can use this simulator
 	to test your intution against a mathematical projection. This portal is
 	developed mainly for you.  If you need any help with running the simulator
-	with complex initial seeds and mitigation strategies, feel free to [contact
-	us](./about-us.md).
+	with complex initial seeds and mitigation strategies, feel free to contact
+	us at <covidsim.in@gmail.com>.
 	
 2.	If you are an academician with a recent (that's some of us :) or a long
 	standing interest in epidemiology, then we hope this simulator may be
