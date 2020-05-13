@@ -19,7 +19,7 @@ indicated by a colour scale in the map.
 
 ## Where can I see real data?
 
-One good place to see regularly updated real data on the Covid 19 situation in Kerala is <https://covid19kerala.info>.
+One good place to see regularly updated real data on the Covid-19 situation in Kerala is <https://covid19kerala.info>.
 
 ## Do you use any real data at all?
 
@@ -30,7 +30,7 @@ non-agricultural workers in Kerala (from 2011 census data).
 
 ## Do you use any patient data?
 
-*No.* The simulator runs based on the intital seed given by the user.
+*No.* The simulator runs based on the initial seed given by the user.
 
 ## What are the factors which influence the projections?
 
@@ -40,7 +40,7 @@ mitigation strategies and the initial seed of region-wise infectious people.
 ## What exactly are you projecting?
 
 We are projecting the future number of Covid-19 infectious people in each grama
-panchayath, municipality and municpal corporation in Kerala. 
+panchayath, municipality and muncipal corporation in Kerala. 
 
 We say that a person is *infectious* if she can potentially infect another
 person through contact. The person may or may not be showing symptoms during
