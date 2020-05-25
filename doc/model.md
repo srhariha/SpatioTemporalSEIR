@@ -28,7 +28,7 @@ A person gets infected by SARS-CoV-2 (Covid-19) virus when she comes in contact
 (either directly or via a shared surface) with an infectious person. A fraction
 of such people will start showing symptoms within 2 to 14 days (average 5.2
 days) and the symptoms will typically last for around 10 days. This is called
-as the *health timeline* in the figure below. But what matters more for
+as the *health timeline* in the figure above. But what matters more for
 modelling is the *infectivity timeline*, which is the period during which an
 infected person is infectious or contagious. This period is estimated to start
 typically from about 1 to 2 days before the onset of symptoms and lasts
@@ -249,7 +249,7 @@ $$
 
 # Putting it all together - Spatio-Temporal Evolution
 
-Finally we put all these together to form a four ordinary differential
+Finally we put all these together to form four ordinary differential
 equations per region. The first two equations for each region contain terms
 from other regions too.
 
